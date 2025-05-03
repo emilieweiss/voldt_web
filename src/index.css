@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+@plugin "tailwindcss-animate";
+
+@font-face {
+  font-family: 'Omnes';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/Omnes Regular.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Omnes';
+  font-style: italic;
+  font-weight: 400;
+  src: url('/fonts/Omnes Italic.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Omnes';
+  font-style: normal;
+  font-weight: 700;
+  src: url('/fonts/Omnes Bold.woff') format('woff');
+}
+
+body {
+  @apply m-0 text-xl;
+  font-family: 'Omnes', -apple-system, BlinkMacSystemFont;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+		monospace;
+}
+
+@layer base {
+	h1 {
+		font-size: var(--text-2xl);
+		font-weight: 700;
+	}
+	h2 {
+		font-size: var(--text-xl);
+	}
+	h3 {
+		font-size: var(--text-lg);
+	}
+}
+
+/* farverne
+
+emilies farver
+static const Color backgroundColor = Color.fromRGBO(255,
+    255,
+    255,
+    1,
+  );
+  static const Color white = Color.fromRGBO(
+    255,
+    255,
+    255,
+    1,
+  );
+  static const Color woltBlue = Color.fromRGBO(
+    0,
+    157,
+    244,
+    1,
+  );
+  static const Color woltMediumBlue = Color.fromRGBO(
+    19,
+    114,
+    136,
+    1,
+  );
+  static const Color woltDarkBlue = Color.fromRGBO(
+    32,
+    33,
+    37,
+    1,
+  );
+  static const Color black = Color.fromRGBO(0, 0, 0, 1);
+  static const Color mediumGrey = Color.fromRGBO(
+    241,
+    241,
+    243,
+    1,
+  );
+  static const Color lightGrey = Color.fromRGBO(
+    241,
+    241,
+    243,
+    1,
+  );
+
+*/
+:root {
+  --color-background: oklch(1 0 0);
+  --color-white: oklch(1 0 0);
+  --color-wolt-blue: oklch(0.75 0.188 251.8);
+  --color-wolt-medium-blue: oklch(0.52 0.097 218.3);
+  --color-wolt-dark-blue: oklch(0.28 0.012 266.7);
+  --color-black: oklch(0 0 0);
+  --color-medium-grey: oklch(0.94 0.007 258.2);
+  --color-light-grey: oklch(0.94 0.007 258.2);
+}
+
+.dark {
+	--background: oklch(0.141 0.005 285.823);
+	--foreground: oklch(0.985 0 0);
+	--card: oklch(0.141 0.005 285.823);
+	--card-foreground: oklch(0.985 0 0);
+	--popover: oklch(0.141 0.005 285.823);
+	--popover-foreground: oklch(0.985 0 0);
+	--primary: oklch(0.985 0 0);
+	--primary-foreground: oklch(0.21 0.006 285.885);
+	--secondary: oklch(0.274 0.006 286.033);
+	--secondary-foreground: oklch(0.985 0 0);
+	--muted: oklch(0.274 0.006 286.033);
+	--muted-foreground: oklch(0.705 0.015 286.067);
+	--accent: oklch(0.274 0.006 286.033);
+	--accent-foreground: oklch(0.985 0 0);
+	--destructive: oklch(0.396 0.141 25.723);
+	--destructive-foreground: oklch(0.637 0.237 25.331);
+	--border: oklch(0.274 0.006 286.033);
+	--input: oklch(0.274 0.006 286.033);
+	--ring: oklch(0.442 0.017 285.786);
+	--chart-1: oklch(0.488 0.243 264.376);
+	--chart-2: oklch(0.696 0.17 162.48);
+	--chart-3: oklch(0.769 0.188 70.08);
+	--chart-4: oklch(0.627 0.265 303.9);
+	--chart-5: oklch(0.645 0.246 16.439);
+	--sidebar: oklch(0.21 0.006 285.885);
+	--sidebar-foreground: oklch(0.985 0 0);
+	--sidebar-primary: oklch(0.488 0.243 264.376);
+	--sidebar-primary-foreground: oklch(0.985 0 0);
+	--sidebar-accent: oklch(0.274 0.006 286.033);
+	--sidebar-accent-foreground: oklch(0.985 0 0);
+	--sidebar-border: oklch(0.274 0.006 286.033);
+	--sidebar-ring: oklch(0.442 0.017 285.786);
+}
