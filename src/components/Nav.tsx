@@ -1,30 +1,54 @@
-import { Link, useLocation } from 'react-router'
+import { Link, useLocation, useNavigate } from 'react-router';
+import Button from './ui/Button';
+import { useAuth } from '../context/Auth';
 
 function Navbar() {
-  const { pathname } = useLocation()
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const { isLoggedIn, logout } = useAuth();
 
   const linkClass = (path: string) =>
     `font-semibold ${
       pathname === path ? 'text-[color:var(--color-wolt-blue)]' : 'text-black'
-    }`
+    }`;
 
   return (
-    <nav className="flex items-center justify-between p-4 border-b">
-      <div className="text-2xl font-bold text-[color:var(--color-wolt-blue)]">voldt</div>
-      <div className="flex space-x-8">
-        <Link to="/" className={linkClass('/')}>Hjem</Link>
-        <Link to="/create-job" className={linkClass('/create-job')}>Opret job</Link>
-        <Link to="/job-list" className={linkClass('/job-list')}>Jobliste</Link>
-        <Link to="/edit-job/1" className={linkClass('/edit-job/1')}>Rediger jobliste</Link>
+    <nav className="flex items-center justify-between px-6 py-4 border-b border-gray-100 lg:px-30">
+      <div className="text-4xl font-bold text-[color:var(--color-wolt-blue)]">
+        voldt
       </div>
-      <Link
-        to="/login"
-        className="bg-[color:var(--color-wolt-blue)] hover:bg-[color:var(--color-wolt-medium-blue)] text-white font-semibold py-2 px-4 rounded-xl"
-      >
-        Log ud
-      </Link>
+      {isLoggedIn ? (
+        <>
+          <div className="flex space-x-8 text-sm">
+            <Link to="/" className={linkClass('/')}>
+              Hjem
+            </Link>
+            <Link to="/create-job" className={linkClass('/create-job')}>
+              Opret job
+            </Link>
+            <Link to="/job-list" className={linkClass('/job-list')}>
+              Jobliste
+            </Link>
+            <Link to="/edit-job/1" className={linkClass('/edit-job/1')}>
+              Rediger jobliste
+            </Link>
+          </div>
+          <Button className="w-25" onClick={logout}>
+            Log ud
+          </Button>
+        </>
+      ) : (
+        <div className="flex items-center space-x-4 ml-auto">
+          <Link to="/login" className="text-sm font-semibold">
+            Login
+          </Link>
+          <Button className="" onClick={() => navigate('/signup')}>
+            Opret profil
+          </Button>
+        </div>
+      )}
     </nav>
-  )
+  );
 }
 
-export default Navbar
+export default Navbar;
