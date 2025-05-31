@@ -31,9 +31,7 @@ const TempImageUploader = () => {
   };
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      console.log('Session:', data.session);
-    });
+    supabase.auth.getSession().then(({ data }) => {});
   }, []);
 
   const handleUpload = async () => {

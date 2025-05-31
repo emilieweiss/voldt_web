@@ -1,6 +1,6 @@
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   children: React.ReactNode;
-  variant?: 'default' | 'secondary';
+  variant?: 'default' | 'secondary' | 'destructive';
 };
 
 function Button({
@@ -16,6 +16,7 @@ function Button({
     default:
       'bg-(--color-wolt-blue) hover:bg-(--color-wolt-medium-blue) text-white',
     secondary: 'bg-gray-200 hover:bg-gray-300 text-gray-800',
+    destructive: 'bg-red-700 hover:bg-red-600 text-white',
   };
 
   return (

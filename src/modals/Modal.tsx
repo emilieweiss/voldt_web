@@ -16,7 +16,7 @@ function Modal({ isOpen, onClose, children }: ModalProps) {
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 bg-opacity-40"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 bg-opacity-40 max-w-screen max-h-screen overflow-y-auto"
       onMouseDown={(e) => {
         if (e.target === overlayRef.current) {
           mouseDownTarget.current = e.target;
@@ -35,7 +35,7 @@ function Modal({ isOpen, onClose, children }: ModalProps) {
       }}
     >
       <div
-        className="bg-white rounded-xl p-6 shadow-lg w-full max-w-xl relative"
+        className="bg-white rounded-xl p-6 shadow-lg w-full relative max-w-[80vw] lg:max-w-[60vw] max-h-[70vh] md:max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <button

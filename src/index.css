@@ -30,6 +30,10 @@
   src: url('/fonts/Omnes Bold.woff') format('woff');
 }
 
+html {
+  overflow-y: scroll;
+}
+
 body {
   @apply m-0 text-xl;
   font-family:
@@ -46,6 +50,21 @@ code {
 }
 
 @layer base {
+  h1 {
+    font-size: var(--text-xl);
+    font-weight: 700;
+  }
+  h2 {
+    font-size: var(--text-lg);
+    font-weight: 600;
+  }
+  h3 {
+    font-size: var(--text-base);
+    color: var(--color-text-grey);
+  }
+}
+
+@media (min-width: 768px) {
   h1 {
     font-size: var(--text-5xl);
     font-weight: 700;

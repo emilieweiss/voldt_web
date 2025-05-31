@@ -7,6 +7,7 @@ export interface UserJob {
   adress: string;
   duration: string;
   delivery: string; // 'HH:mm:ss'
+  image_solved_url?: string | null; // URL to the job image
   money: number; //how much money the job pays
   solved: boolean;
 }

@@ -3,6 +3,7 @@ import { useAuth } from '../context/Auth';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { useNavigate } from 'react-router';
+import Label from '../components/ui/Label';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -30,7 +31,7 @@ const Login = () => {
       </h3>
       <form onSubmit={handleSubmit} className="space-y-4 md:w-sm w-full">
         <div>
-          <label className="block mb-1">Email</label>
+          <Label className="block mb-1">Email</Label>
           <Input
             type="email"
             value={email}
@@ -40,7 +41,7 @@ const Login = () => {
           />
         </div>
         <div>
-          <label className="block mb-1">Kodeord</label>
+          <Label className="block mb-1">Kodeord</Label>
           <Input
             type="password"
             value={password}

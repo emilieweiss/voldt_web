@@ -7,16 +7,22 @@ function Navbar() {
   const navigate = useNavigate();
   const { isLoggedIn, logout } = useAuth();
 
-  const linkClass = (path: string) =>
-    `font-semibold ${
-      pathname === path ? 'text-[color:var(--color-wolt-blue)]' : 'text-black'
+  const linkClass = (path: string) => {
+    if (path === '/') {
+      return `font-semibold ${
+        pathname === '/' ? 'text-[color:var(--color-wolt-blue)]' : 'text-black'
+      }`;
+    }
+    return `font-semibold ${
+      pathname.startsWith(path)
+        ? 'text-[color:var(--color-wolt-blue)]'
+        : 'text-black'
     }`;
+  };
 
   return (
     <nav className="flex items-center justify-between px-6 py-4 border-b border-gray-100 lg:px-30">
-      <div className="text-4xl font-bold text-[color:var(--color-wolt-blue)]">
-        voldt
-      </div>
+      <div className="text-4xl font-bold text-(--color-wolt-blue)">voldt</div>
       {isLoggedIn ? (
         <>
           <div className="flex space-x-8 text-sm">
@@ -29,8 +35,11 @@ function Navbar() {
             <Link to="/job-list" className={linkClass('/job-list')}>
               Jobliste
             </Link>
-            <Link to="/edit-job/1" className={linkClass('/edit-job/1')}>
+            <Link to={`/edit-job/`} className={linkClass('/edit-job/')}>
               Rediger jobliste
+            </Link>
+            <Link to={`/approve`} className={linkClass('/approve')}>
+              Godkend job
             </Link>
           </div>
           <Button className="w-25" onClick={logout}>

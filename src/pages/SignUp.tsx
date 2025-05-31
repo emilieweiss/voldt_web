@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import * as userApi from '../api/user';
+import Label from '../components/ui/Label';
 
 const SignUp = () => {
   const [name, setName] = useState('');
@@ -36,7 +37,7 @@ const SignUp = () => {
       </h3>
       <form onSubmit={handleSubmit} className="space-y-4 md:w-sm w-full">
         <div>
-          <label className="block mb-1">Navn</label>
+          <Label className="block mb-1">Navn</Label>
           <Input
             type="text"
             value={name}
@@ -46,7 +47,7 @@ const SignUp = () => {
           />
         </div>
         <div>
-          <label className="block mb-1">Email</label>
+          <Label className="block mb-1">Email</Label>
           <Input
             type="email"
             value={email}
@@ -56,7 +57,7 @@ const SignUp = () => {
           />
         </div>
         <div>
-          <label className="block mb-1">Kodeord</label>
+          <Label className="block mb-1">Kodeord</Label>
           <Input
             type="password"
             value={password}

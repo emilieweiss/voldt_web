@@ -18,9 +18,6 @@ export async function uploadJobImage(
   if (error) throw error;
 
   const { data } = supabase.storage.from('job-images').getPublicUrl(filePath);
-  console.log('UPLOADED TO:', `jobs/${jobId}/${file.name}`);
-  console.log('PUBLIC URL:', data?.publicUrl);
-  console.log('FILE NAME:', file.name);
   if (!data?.publicUrl) throw new Error('Kunne ikke hente billede-URL');
 
   return data.publicUrl;

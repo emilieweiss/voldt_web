@@ -10,6 +10,8 @@ import EditJobList from './pages/EditJobList';
 import RequireAuth from './context/RequireAuth';
 import { Toaster } from 'sonner';
 import TempImageUploader from './pages/TempUploader';
+import ApproveUserJob from './pages/ApproveUserJob';
+import EditJobListDefault from './pages/EditJobListDefault';
 
 function App() {
   const location = useLocation();
@@ -56,10 +58,26 @@ function App() {
             }
           />
           <Route
+            path="/edit-job"
+            element={
+              <RequireAuth>
+                <EditJobListDefault />
+              </RequireAuth>
+            }
+          />
+          <Route
             path="/edit-job/:id"
             element={
               <RequireAuth>
                 <EditJobList />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/approve"
+            element={
+              <RequireAuth>
+                <ApproveUserJob />
               </RequireAuth>
             }
           />

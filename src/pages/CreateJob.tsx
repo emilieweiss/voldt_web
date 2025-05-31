@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import CreateJobModal from '../modals/CreateJobModal';
-import JobCardDetailed from '../components/JobCardDetailed';
+import JobCardDetailed from '../components/create-job-components/JobCardDetailed';
 import { getJobs, getJob } from '../api/job';
 import { Job } from '../types/job';
 import Button from '../components/ui/Button';
@@ -8,6 +8,8 @@ import { Plus } from 'lucide-react';
 import Modal from '../modals/Modal';
 import Select from '../components/ui/Select';
 import { toast } from 'sonner';
+import Searchbar from '../components/ui/Searchbar';
+import Label from '../components/ui/Label';
 
 const CreateJob = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -15,6 +17,7 @@ const CreateJob = () => {
   const [error, setError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [sortBy, setSortBy] = useState<SortBy>('title-asc');
+  const [search, setSearch] = useState('');
 
   const fetchJobs = async () => {
     setLoading(true);
@@ -54,47 +57,60 @@ const CreateJob = () => {
 
   type SortBy = 'title-asc' | 'title-desc' | 'money-asc' | 'money-desc';
 
-  const sortedJobs = jobs
-    .filter((job) => job && job.title)
-    .sort((a, b) => {
-      if (sortBy === 'title-asc') return a.title.localeCompare(b.title);
-      if (sortBy === 'title-desc') return b.title.localeCompare(a.title);
-      if (sortBy === 'money-asc') return Number(a.money) - Number(b.money);
-      if (sortBy === 'money-desc') return Number(b.money) - Number(a.money);
-      return 0;
-    });
+  const filteredJobs = jobs.filter(
+    (job) =>
+      job &&
+      job.title &&
+      job.title.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  const sortedJobs = filteredJobs.sort((a, b) => {
+    if (sortBy === 'title-asc') return a.title.localeCompare(b.title);
+    if (sortBy === 'title-desc') return b.title.localeCompare(a.title);
+    if (sortBy === 'money-asc') return Number(a.money) - Number(b.money);
+    if (sortBy === 'money-desc') return Number(b.money) - Number(a.money);
+    return 0;
+  });
 
   return (
-    <div className="relative">
+    <div className="flex flex-col">
       <h1 className="">Liste over oprettede opgaver</h1>
-      <div className="flex items-center gap-4 mb-4">
-        <label htmlFor="sortby" className="text-sm font-semibold">
-          Sortér efter:
-        </label>
-        <Select
-          id="sortby"
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as SortBy)}
-          className="border rounded px-2 py-1"
-        >
-          <option value="title-asc">Titel (A-Å)</option>
-          <option value="title-desc">Titel (Å-A)</option>
-          <option value="money-asc">Økonomi (lavest først)</option>
-          <option value="money-desc">Økonomi (højest først)</option>
-        </Select>
-      </div>
-      <div className="mb-6 flex flex-col gap-y-[24px] relative">
+      <div className="flex flex-col gap-6 mt-4">
+        <div className="flex items-center gap-x-4">
+          {/* Search bar on the left */}
+          <Searchbar
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full md:w-1/3"
+          />
+
+          {/* Sort and + button on the right */}
+          <div className="flex items-center gap-4 ml-auto">
+            <Label htmlFor="sortby" className="text-sm font-semibold">
+              Sortér efter:
+            </Label>
+            <Select
+              id="sortby"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortBy)}
+              className=""
+            >
+              <option value="title-asc">Titel (A-Å)</option>
+              <option value="title-desc">Titel (Å-A)</option>
+              <option value="money-asc">Økonomi (lavest først)</option>
+              <option value="money-desc">Økonomi (højest først)</option>
+            </Select>
+            <Button
+              onClick={() => setIsOpen(true)}
+              className="w-14 h-14 rounded-xl flex items-center justify-center p-0"
+              aria-label="Opret ny opgave"
+            >
+              <Plus strokeWidth={5} size={64} />
+            </Button>
+          </div>
+        </div>
         {loading && <div>Indlæser jobs...</div>}
         {error && <div className="text-red-500">{error}</div>}
-        <div className="flex justify-end">
-          <Button
-            onClick={() => setIsOpen(true)}
-            className="w-14 h-14 rounded-xl flex items-center justify-center p-0"
-            aria-label="Opret ny opgave"
-          >
-            <Plus strokeWidth={5} size={64} />
-          </Button>
-        </div>
         {!loading &&
           !error &&
           sortedJobs.map((job) => (
@@ -102,6 +118,9 @@ const CreateJob = () => {
               key={job.id}
               job={job}
               updateSingleJob={updateSingleJob}
+              onDelete={() =>
+                setJobs((prev) => prev.filter((j) => j.id !== job.id))
+              }
             />
           ))}
       </div>

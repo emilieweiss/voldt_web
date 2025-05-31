@@ -15,7 +15,6 @@ export async function login(email: string, password: string) {
 }
 
 export async function signup(email: string, password: string, name: string) {
-  console.log('Email:', email, 'Password:', password, 'Name:', name);
   const { data, error } = await supabase.auth.signUp({ email, password });
   if (error) throw error;
 
@@ -25,5 +24,17 @@ export async function signup(email: string, password: string, name: string) {
       .update({ name, email })
       .eq('id', data.user.id);
   }
+  return data;
+}
+
+export async function getUserProfile() {
+  const { data, error } = await supabase.auth.getUser();
+  if (error) throw error;
+  return data.user;
+}
+
+export async function getUserProfiles() {
+  const { data, error } = await supabase.from('profiles').select('*');
+  if (error) throw error;
   return data;
 }

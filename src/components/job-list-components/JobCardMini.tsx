@@ -1,45 +1,35 @@
-import React from "react";
+import { Job } from '../../types/job';
 
 interface JobCardMiniProps {
-  title: string;
-  description: string;
-  economy: number;
-  timeEstimate: string;
-  deliveryTime: string;
+  job: Job;
 }
 
-const JobCardMini: React.FC<JobCardMiniProps> = ({
-  title,
-  description,
-  economy,
-  timeEstimate,
-  deliveryTime,
-}) => {
+function JobCardMini({ job }: JobCardMiniProps) {
   return (
     <div className="border rounded-lg p-4 shadow-sm bg-gray-50 flex flex-col w-[320px] h-[145px]">
       {/* Title and Description */}
       <div>
-        <h3 className="text-lg font-bold">{title}</h3>
-        <p className="text-gray-600 text-sm">{description}</p>
+        <h3 className="text-lg font-bold">{job.title}</h3>
+        <p className="text-gray-600 text-sm">{job.description}</p>
       </div>
 
       {/* Icons and Details */}
       <div className="flex items-center justify-between text-sm text-gray-600">
         <div className="flex items-center gap-1">
           <span className="material-icons text-gray-500">money</span>
-          <p>{economy}</p>
+          <p>{job.money}</p>
         </div>
         <div className="flex items-center gap-1">
           <span className="material-icons text-gray-500">schedule</span>
-          <p>{timeEstimate}</p>
+          <p>{job.duration}</p>
         </div>
         <div className="flex items-center gap-1">
           <span className="material-icons text-gray-500">levering</span>
-          <p>{deliveryTime}</p>
+          <p>{job.delivery}</p>
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default JobCardMini;
