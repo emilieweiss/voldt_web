@@ -2,16 +2,7 @@ import { supabase } from './user';
 import { UserJob } from '../types/user_job';
 
 // Assign (copy) a job to a user
-export async function assignJobToUser(
-  job: any, // job object with all fields you want to copy
-  userId: string,
-) {
-  const userJob = {
-    ...job, // copies all job fields (title, description, etc.)
-    user_id: userId,
-    solved: false,
-  };
-  delete userJob.id; // remove the original job id if present
+export async function assignJobToUser(userJob: Omit<UserJob, 'id'>) {
   const { data, error } = await supabase
     .from('user_jobs')
     .insert([userJob])
@@ -19,7 +10,6 @@ export async function assignJobToUser(
   if (error) throw error;
   return data;
 }
-
 // Get all jobs assigned to a user
 export async function getUserJobs(userId: string) {
   const { data, error } = await supabase
@@ -65,19 +55,33 @@ export async function getSolvedJobs() {
   const { data, error } = await supabase
     .from('user_jobs')
     .select('*')
-    .eq('solved', true);
+    .eq('solved', true)
+    .eq('approved', false);
+  if (error) throw error;
+  return data as UserJob[];
+}
+
+// Get approved jobs
+export async function getApprovedJobs() {
+  const { data, error } = await supabase
+    .from('user_jobs')
+    .select('*')
+    .eq('solved', true)
+    .eq('approved', true);
   if (error) throw error;
   return data as UserJob[];
 }
 
 export async function approveJob(userJobId: string, amount: number) {
-  // 1. Approve the job
+  // 1. Approve the job and get the updated row
   const { data: userJob, error: jobError } = await supabase
     .from('user_jobs')
-    .update({ solved: true })
+    .update({ approved: true })
     .eq('id', userJobId)
+    .select()
     .single();
   if (jobError) throw jobError;
+  if (!userJob) throw new Error('Job not found or could not be approved');
 
   // 2. Find the user_id from the approved job
   const userId = (userJob as UserJob).user_id;
@@ -89,14 +93,20 @@ export async function approveJob(userJobId: string, amount: number) {
     .eq('id', userId)
     .single();
   if (profileError) throw profileError;
+  if (!profile) throw new Error('Profile not found for user: ' + userId);
 
   // 4. Update the user's money
   const newMoney = (profile.money ?? 0) + amount;
-  const { error: updateError } = await supabase
+  const { data: updatedProfile, error: updateError } = await supabase
     .from('profiles')
     .update({ money: newMoney })
-    .eq('id', userId);
-  if (updateError) throw updateError;
+    .eq('id', userId)
+    .select();
 
-  return userJob;
+  if (updateError) throw updateError;
+  if (!updatedProfile || updatedProfile.length === 0) {
+    throw new Error('No profile updated for user: ' + userId);
+  }
+
+  return { userJob, updatedProfile };
 }
