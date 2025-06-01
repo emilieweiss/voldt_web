@@ -71,7 +71,7 @@ function JobCardDetailed({
             {job.money}
           </div>
           <div className="border-l border-gray-300 row-start-3 flex justify-center items-center">
-            {Math.round(job.money * 0.66)}
+            {Math.round(job.money * 0.667)}
           </div>
           <div className="border-l border-gray-300 row-start-3 flex justify-center items-center">
             {Math.round(job.money * 0.33)}
