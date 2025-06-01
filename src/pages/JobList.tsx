@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router';
 import { getUserProfiles } from '../api/user';
 import { getUserJobs } from '../api/user_job';
 import UserJobList from '../components/job-list-components/UserJobList';
+import { BarLoader } from 'react-spinners';
 
 const JobList = () => {
   const [users, setUsers] = useState<any[]>([]);
@@ -34,24 +35,26 @@ const JobList = () => {
     navigate(`/edit-job/${userId}`);
   };
 
-  if (!users || users.length === 0) {
-    return <div>Ingen brugere fundet</div>;
-  }
-
   const filteredUsers = id ? users.filter((user) => user.id === id) : users;
 
   return (
     <div className="">
-      <h1>Jobliste</h1>
-      <div className="flex gap-8 flex-wrap">
-        {filteredUsers.map((user) => (
-          <UserJobList
-            key={user.id}
-            profileName={user.name}
-            jobs={userJobs[user.id] || []}
-            onEdit={() => handleEdit(user.id)}
-          />
-        ))}
+      <h1 className="pb-6">Jobliste</h1>
+      <div className="flex gap-4 flex-wrap justify-between">
+        {users.length === 0 ? (
+          <BarLoader />
+        ) : (
+          [...filteredUsers]
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((user: any) => (
+              <UserJobList
+                key={user.id}
+                profileName={user.name}
+                jobs={userJobs[user.id] || []}
+                onEdit={() => handleEdit(user.id)}
+              />
+            ))
+        )}
       </div>
     </div>
   );

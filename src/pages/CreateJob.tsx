@@ -47,7 +47,7 @@ const CreateJob = () => {
       toast.success('Job opdateret');
     } catch (err: any) {
       setError(err.message || 'Kunne ikke opdatere job');
-      toast.error('Job opdateret');
+      toast.error('Job kunne ikke opdateres');
     }
   };
 
@@ -74,8 +74,8 @@ const CreateJob = () => {
 
   return (
     <div className="flex flex-col">
-      <h1 className="">Liste over oprettede opgaver</h1>
-      <div className="flex flex-col gap-6 mt-4">
+      <h1 className="mb-4">Liste over oprettede opgaver</h1>
+      <div className="flex flex-col gap-6">
         <div className="flex items-center gap-x-4">
           {/* Search bar on the left */}
           <Searchbar

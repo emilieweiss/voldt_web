@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import { getUserProfiles } from '../api/user';
 import SolvedJobCard from '../components/approve-user-job-components/SolvedUserJobCard';
 import ApproveUserJobModal from '../modals/ApproveUserJobModal';
-import { approveJob, markJobAsUnsolved, getSolvedJobs } from '../api/user_job';
+import { approveJob, getSolvedJobs, markJobAsUnsolved } from '../api/user_job';
+import { Job } from '../types/job';
+import { toast } from 'sonner';
 
 const ApproveJob = () => {
   const [solvedJobs, setSolvedJobs] = useState<any[]>([]);
@@ -42,7 +44,7 @@ const ApproveJob = () => {
   }, []);
 
   // Handler to open modal
-  const handleOpenApproveModal = (job: any) => {
+  const handleOpenApproveModal = (job: Job) => {
     setSelectedJob(job);
     setModalOpen(true);
   };
@@ -58,7 +60,7 @@ const ApproveJob = () => {
 
   return (
     <div className="p-0">
-      <h1 className="text-2xl font-bold mb-6">Godkendte jobs</h1>
+      <h1 className="text-2xl font-bold mb-6">Godkend færdige jobs</h1>
       {loading ? (
         <div>Indlæser...</div>
       ) : solvedJobs.length === 0 ? (
@@ -78,16 +80,21 @@ const ApproveJob = () => {
       <ApproveUserJobModal
         isOpen={modalOpen}
         onClose={handleCloseApproveModal}
-        onApprove={async () => {
+        onApprove={async (rating) => {
           if (selectedJob?.id) {
-            await approveJob(selectedJob.id, selectedJob.money);
-            await refreshJobs();
-          }
-          handleCloseApproveModal();
-        }}
-        onReject={async () => {
-          if (selectedJob?.id) {
-            await markJobAsUnsolved(selectedJob.id);
+            if (rating === 'fejlet') {
+              await markJobAsUnsolved(selectedJob.id);
+            } else {
+              let amount = selectedJob.money;
+              if (rating === 'fint')
+                amount = Math.round(selectedJob.money * 0.667);
+              if (rating === 'skidt')
+                amount = Math.round(selectedJob.money * 0.33);
+              await approveJob(selectedJob.id, amount);
+              toast.success(
+                `Job godkendt med rating: "${rating}". Udbetaling: ${amount} kr.`,
+              );
+            }
             await refreshJobs();
           }
           handleCloseApproveModal();
