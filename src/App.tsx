@@ -9,7 +9,6 @@ import JobList from './pages/JobList';
 import EditJobList from './pages/EditJobList';
 import RequireAuth from './context/RequireAuth';
 import { Toaster } from 'sonner';
-import TempImageUploader from './pages/TempUploader';
 import ApproveUserJob from './pages/ApproveUserJob';
 import EditJobListDefault from './pages/EditJobListDefault';
 
@@ -32,7 +31,6 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/temp" element={<TempImageUploader />} />
           <Route
             path="/"
             element={
