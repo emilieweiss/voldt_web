@@ -14,7 +14,7 @@ function Searchbar({ className = '', ...props }: SearchbarProps) {
           rounded-[10px]
           px-3
           py-2
-          text-base
+          text-sm
           outline-none
           h-10
           w-full

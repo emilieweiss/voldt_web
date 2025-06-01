@@ -15,7 +15,7 @@ function Select({ className = '', children, ...props }: SelectProps) {
           px-3
           pr-8
           py-2
-          text-base
+          text-sm
           outline-none
           h-10
           appearance-none
