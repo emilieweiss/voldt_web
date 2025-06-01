@@ -1,70 +1,83 @@
 import { useState } from 'react';
-import Button from '../components/ui/Button';
 import Modal from './Modal';
-import { BounceLoader } from 'react-spinners';
+import Button from '../components/ui/Button';
 
-interface ApproveUserJobModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onApprove: () => void;
-  onReject: () => void;
-  imageSolvedUrl?: string;
-}
-
-function ApproveUserJobModal({
+export default function ApproveUserJobModal({
   isOpen,
   onClose,
   onApprove,
-  onReject,
   imageSolvedUrl,
-}: ApproveUserJobModalProps) {
-  const [imageLoading, setImageLoading] = useState(true);
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onApprove: (rating: 'godt' | 'fint' | 'skidt' | 'fejlet') => void;
+  imageSolvedUrl?: string | null;
+}) {
+  const [rating, setRating] = useState<
+    'godt' | 'fint' | 'skidt' | 'fejlet' | null
+  >('godt');
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="flex flex-col items-center">
-        <h2 className="text-lg font-semibold text-center">Godkend job</h2>
-        <p className="mb-4">Er du sikker på, at du vil godkende dette job?</p>
-        {imageSolvedUrl && (
-          <div className="relative flex flex-col items-center min-h-32 min-w-32">
-            {imageLoading ? (
-              <div className="flex items-center justify-center w-full h-full min-h-32 min-w-32">
-                <BounceLoader size={48} color="#4A90E2" />
-              </div>
-            ) : (
-              <img
-                src={imageSolvedUrl}
-                alt="Billede af løst job"
-                className="max-h-[60vh] object-contain"
-                onLoad={() => setImageLoading(false)}
-                onError={() => setImageLoading(false)}
-              />
-            )}
-            {/* Preload image to trigger onLoad/onError */}
-            <img
-              src={imageSolvedUrl}
-              alt=""
-              style={{ display: 'none' }}
-              onLoad={() => setImageLoading(false)}
-              onError={() => setImageLoading(false)}
-            />
-          </div>
+      <div className="flex flex-col gap-6">
+        <h2 className="text-xl font-bold">Godkend løsning</h2>
+        {imageSolvedUrl ? (
+          <img
+            src={imageSolvedUrl}
+            alt="Løsning"
+            className="rounded-lg max-h-64 object-contain mx-auto"
+          />
+        ) : (
+          <p className="text-red-500 text-center">Fejl i hentning af billede</p>
         )}
-        <div className="flex gap-4 mt-4 w-1/2">
+
+        <div className="flex flex-col items-center">
+          <div className="font-semibold mb-2">Vurdér løsning:</div>
+          <div className="flex gap-4 mb-4">
+            <Button
+              type="button"
+              variant={rating === 'godt' ? 'default' : 'secondary'}
+              onClick={() => setRating('godt')}
+            >
+              Godt
+            </Button>
+            <Button
+              type="button"
+              variant={rating === 'fint' ? 'default' : 'secondary'}
+              onClick={() => setRating('fint')}
+            >
+              Fint
+            </Button>
+            <Button
+              type="button"
+              variant={rating === 'skidt' ? 'default' : 'secondary'}
+              onClick={() => setRating('skidt')}
+            >
+              Skidt
+            </Button>
+            <Button
+              type="button"
+              variant={rating === 'fejlet' ? 'default' : 'secondary'}
+              onClick={() => setRating('fejlet')}
+            >
+              Fejlet
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex gap-4 justify-end">
           <Button
-            variant="destructive"
-            onClick={onReject}
-            className="w-full md:text-xl"
+            type="button"
+            variant="default"
+            disabled={!rating}
+            onClick={() => {
+              if (rating) onApprove(rating);
+            }}
           >
-            Afvis
-          </Button>
-          <Button className="w-full md:text-xl" onClick={onApprove}>
-            Godkend
+            Bekræft godkendelse
           </Button>
         </div>
       </div>
     </Modal>
   );
 }
-
-export default ApproveUserJobModal;

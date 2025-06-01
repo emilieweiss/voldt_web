@@ -35,7 +35,7 @@ function Modal({ isOpen, onClose, children }: ModalProps) {
       }}
     >
       <div
-        className="bg-white rounded-xl p-6 shadow-lg w-full relative max-w-[80vw] lg:max-w-[60vw] max-h-[70vh] md:max-h-[90vh] overflow-y-auto"
+        className="bg-white rounded-xl p-6 w-full relative max-w-[80vw] lg:max-w-[60vw] max-h-[70vh] md:max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <button
