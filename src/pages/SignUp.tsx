@@ -4,6 +4,7 @@ import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import * as userApi from '../api/user';
 import Label from '../components/ui/Label';
+import { toast } from 'sonner';
 
 const SignUp = () => {
   const [name, setName] = useState('');
@@ -24,8 +25,10 @@ const SignUp = () => {
     try {
       await userApi.signup(email, password, name);
       navigate('/login');
-    } catch (err: any) {
-      setError(err.message || 'Oprettelse fejlede');
+      toast.success('Profil oprettet! Du kan nu logge ind.');
+    } catch {
+      setError('Oprettelse fejlede');
+      toast.error('Kunne ikke oprette profil. Prøv igen senere.');
     }
   };
 

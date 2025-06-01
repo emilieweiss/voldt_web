@@ -14,14 +14,22 @@ import {
 } from 'recharts';
 import { getApprovedJobs } from '../api/user_job';
 import { getUserProfiles } from '../api/user';
+import {
+  BarData,
+  ChartUser,
+  LineChartData,
+  TableData,
+} from '../types/chart_data';
+import { User } from '../types/user';
+import { UserJob } from '../types/user_job';
 
 const colors = ['#8884d8', '#82ca9d', '#ffc658', '#f97316', '#10b981'];
 
 const Home = () => {
-  const [lineChartData, setLineChartData] = useState<any[]>([]);
-  const [barData, setBarData] = useState<any[]>([]);
-  const [tableData, setTableData] = useState<any[]>([]);
-  const [chartUsers, setChartUsers] = useState<any[]>([]);
+  const [lineChartData, setLineChartData] = useState<LineChartData[]>([]);
+  const [barData, setBarData] = useState<BarData[]>([]);
+  const [tableData, setTableData] = useState<TableData[]>([]);
+  const [chartUsers, setChartUsers] = useState<ChartUser[]>([]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -39,7 +47,7 @@ const Home = () => {
       setChartUsers(chartUsers);
 
       const userMap = Object.fromEntries(
-        profiles.map((u: any) => [u.id, u.name]),
+        profiles.map((u: User) => [u.id, u.name]),
       );
 
       const jobCounts: Record<string, number> = {};
@@ -47,19 +55,19 @@ const Home = () => {
       // Prepare delivery times (sorted)
       const deliveryTimes = Array.from(
         new Set(
-          jobs.map((job: any) => job.delivery?.slice(0, 5)).filter(Boolean),
+          jobs.map((job: UserJob) => job.delivery?.slice(0, 5)).filter(Boolean),
         ),
       ).sort();
 
       // Prepare cumulative money per user per delivery time
-      const userIds = profiles.map((u: any) => u.id);
+      const userIds = profiles.map((u: User) => u.id);
 
       // Initialize cumulative sums
       const cumulative: Record<string, number> = {};
       userIds.forEach((id) => (cumulative[id] = 0));
 
       // Prepare jobs grouped by delivery time and user
-      const jobsByTime: Record<string, any[]> = {};
+      const jobsByTime: Record<string, UserJob[]> = {};
       for (const time of deliveryTimes) {
         jobsByTime[time] = [];
       }
@@ -69,9 +77,9 @@ const Home = () => {
       }
 
       // Build line chart data
-      const lineChartData: any[] = [];
+      const lineChartData: LineChartData[] = [];
       for (const time of deliveryTimes) {
-        const row: any = { delivery: time };
+        const row: LineChartData = { delivery: time };
         // Add jobs at this delivery time to cumulative sum
         for (const job of jobsByTime[time]) {
           if (job.user_id) {

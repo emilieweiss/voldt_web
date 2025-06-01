@@ -25,8 +25,12 @@ const CreateJob = () => {
     try {
       const data = await getJobs();
       setJobs(data);
-    } catch (err: any) {
-      setError(err.message || 'Kunne ikke hente jobs');
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message || 'Kunne ikke hente jobs');
+      } else {
+        setError('Kunne ikke hente jobs');
+      }
     } finally {
       setLoading(false);
     }
@@ -45,8 +49,12 @@ const CreateJob = () => {
         prevJobs.map((job) => (job.id === updatedJob.id ? updatedJob : job)),
       );
       toast.success('Job opdateret');
-    } catch (err: any) {
-      setError(err.message || 'Kunne ikke opdatere job');
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message || 'Kunne ikke opdatere job');
+      } else {
+        setError('Kunne ikke opdatere job');
+      }
       toast.error('Job kunne ikke opdateres');
     }
   };

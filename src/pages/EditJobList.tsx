@@ -7,11 +7,13 @@ import JobTemplatesList from '../components/job-list-components/JobTemplatesList
 import { Job } from '../types/job';
 import { BarLoader } from 'react-spinners';
 import { toast } from 'sonner';
+import { User } from '../types/user';
+import { UserJob } from '../types/user_job';
 
 const EditJobList = () => {
   const { id } = useParams<{ id: string }>();
-  const [user, setUser] = useState<any>(null);
-  const [jobs, setJobs] = useState<any[]>([]);
+  const [user, setUser] = useState<User>();
+  const [jobs, setJobs] = useState<UserJob[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,7 +21,7 @@ const EditJobList = () => {
       setLoading(true);
       try {
         const users = await getUserProfiles();
-        const foundUser = users.find((u: any) => u.id === id);
+        const foundUser = users.find((u: User) => u.id === id);
         setUser(foundUser);
         if (foundUser) {
           const userJobs = await getUserJobs(foundUser.id);
@@ -35,7 +37,7 @@ const EditJobList = () => {
   const handleAssignJob = async (jobToAssign: Job) => {
     try {
       if (!jobToAssign.id || !user?.id) {
-        alert('Job eller bruger mangler id!');
+        toast.error('Job eller bruger mangler id!');
         return;
       }
       const userJob = {
@@ -53,13 +55,18 @@ const EditJobList = () => {
         approved: false,
       };
       await assignJobToUser(userJob);
-      toast.success('Job tilføjet til bruger: ' + user.name);
+      toast.success(`Job tilføjet til bruger: ${user.name}`);
       const userJobs = await getUserJobs(user.id);
-      setJobs(userJobs || []);
-    } catch (err) {
+      setJobs(userJobs ?? []);
+    } catch (err: unknown) {
       toast.error('Kunne ikke tilføje job til bruger');
-      alert('Kunne ikke tilføje job: ' + (err as any).message);
-      console.error(err);
+      if (err instanceof Error) {
+        alert('Kunne ikke tilføje job: ' + err.message);
+        console.error(err);
+      } else {
+        alert('Kunne ikke tilføje job: Ukendt fejl');
+        console.error(err);
+      }
     }
   };
 

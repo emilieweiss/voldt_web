@@ -4,10 +4,12 @@ import { getUserProfiles } from '../api/user';
 import { getUserJobs } from '../api/user_job';
 import UserJobList from '../components/job-list-components/UserJobList';
 import { BarLoader } from 'react-spinners';
+import { User } from '../types/user';
+import { UserJob } from '../types/user_job';
 
 const JobList = () => {
-  const [users, setUsers] = useState<any[]>([]);
-  const [userJobs, setUserJobs] = useState<{ [userId: string]: any[] }>({});
+  const [users, setUsers] = useState<User[]>([]);
+  const [userJobs, setUserJobs] = useState<{ [userId: string]: UserJob[] }>({});
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
@@ -16,7 +18,7 @@ const JobList = () => {
       try {
         const fetchedUsers = await getUserProfiles();
         setUsers(fetchedUsers || []);
-        const jobsByUser: { [userId: string]: any[] } = {};
+        const jobsByUser: { [userId: string]: UserJob[] } = {};
         for (const user of fetchedUsers || []) {
           try {
             jobsByUser[user.id] = await getUserJobs(user.id);
@@ -46,7 +48,7 @@ const JobList = () => {
         ) : (
           [...filteredUsers]
             .sort((a, b) => a.name.localeCompare(b.name))
-            .map((user: any) => (
+            .map((user: User) => (
               <UserJobList
                 key={user.id}
                 profileName={user.name}

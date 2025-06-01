@@ -4,6 +4,7 @@ import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { useNavigate } from 'react-router';
 import Label from '../components/ui/Label';
+import { toast } from 'sonner';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -18,8 +19,14 @@ const Login = () => {
     try {
       await login(email, password);
       navigate('/'); // Redirect to home after login
-    } catch (err: any) {
-      setError(err.message || 'Login fejlede');
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message || 'Login fejlede');
+        toast.error(err.message || 'Login fejlede');
+      } else {
+        setError('Login fejlede');
+        toast.error('Login fejlede. Prøv igen senere.');
+      }
     }
   };
 

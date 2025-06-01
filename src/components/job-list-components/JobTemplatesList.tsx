@@ -79,7 +79,7 @@ export default function JobTemplatesList({
             <Select
               id="sortby"
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
             >
               <option value="title-asc">Titel (A-Å)</option>
               <option value="title-desc">Titel (Å-A)</option>

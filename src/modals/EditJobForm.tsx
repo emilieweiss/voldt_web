@@ -38,7 +38,7 @@ function EditJobForm({
   });
   const [file, setFile] = useState<File | null>(null);
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: Job) => {
     try {
       let imageUrl = job.image_url;
       if (file && job.id) {
@@ -50,9 +50,16 @@ function EditJobForm({
         image_url: imageUrl,
       });
       updateSingleJob(job.id!);
+      toast.success('Job opdateret');
       onClose();
-    } catch (err: any) {
-      console.error('Fejl ved opdatering af job:', err);
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Fejl ved opdatering af job:', err);
+        toast.error('Kunne ikke opdatere job: ' + err.message);
+      } else {
+        console.error('Fejl ved opdatering af job:', err);
+        toast.error('Kunne ikke opdatere job');
+      }
     }
   };
 

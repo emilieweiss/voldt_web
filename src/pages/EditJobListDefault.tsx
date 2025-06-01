@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { getUserProfiles } from '../api/user';
 import Select from '../components/ui/Select';
-import { BarLoader } from 'react-spinners';
+import { User } from '../types/user';
 
 const EditJobListDefault = () => {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [selectedUserId, setSelectedUserId] = useState('');
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();

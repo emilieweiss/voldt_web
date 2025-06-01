@@ -5,13 +5,15 @@ import ApproveUserJobModal from '../modals/ApproveUserJobModal';
 import { approveJob, getSolvedJobs, markJobAsUnsolved } from '../api/user_job';
 import { Job } from '../types/job';
 import { toast } from 'sonner';
+import { User } from '../types/user';
+import { UserJob } from '../types/user_job';
 
 const ApproveJob = () => {
-  const [solvedJobs, setSolvedJobs] = useState<any[]>([]);
-  const [users, setUsers] = useState<any[]>([]);
+  const [solvedJobs, setSolvedJobs] = useState<UserJob[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedJob, setSelectedJob] = useState<any>(null);
+  const [selectedJob, setSelectedJob] = useState<UserJob>();
 
   const refreshJobs = async () => {
     setLoading(true);
@@ -44,7 +46,7 @@ const ApproveJob = () => {
   }, []);
 
   // Handler to open modal
-  const handleOpenApproveModal = (job: Job) => {
+  const handleOpenApproveModal = (job: UserJob) => {
     setSelectedJob(job);
     setModalOpen(true);
   };
@@ -52,11 +54,11 @@ const ApproveJob = () => {
   // Handler to close modal
   const handleCloseApproveModal = () => {
     setModalOpen(false);
-    setSelectedJob(null);
+    setSelectedJob(undefined);
   };
 
   // Create a lookup map for user id to name
-  const userMap = Object.fromEntries(users.map((u: any) => [u.id, u.name]));
+  const userMap = Object.fromEntries(users.map((u: User) => [u.id, u.name]));
 
   return (
     <div className="p-0">
