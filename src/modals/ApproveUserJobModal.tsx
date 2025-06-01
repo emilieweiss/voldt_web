@@ -7,16 +7,23 @@ export default function ApproveUserJobModal({
   onClose,
   onApprove,
   imageSolvedUrl,
+  money,
 }: {
   isOpen: boolean;
   onClose: () => void;
   onApprove: (rating: 'godt' | 'fint' | 'skidt' | 'fejlet') => void;
   imageSolvedUrl?: string | null;
+  money: number;
 }) {
   const [rating, setRating] = useState<
     'godt' | 'fint' | 'skidt' | 'fejlet' | null
   >('godt');
-
+  const payouts = {
+    godt: money,
+    fint: Math.round(money * 0.667),
+    skidt: Math.round(money * 0.33),
+    fejlet: 0,
+  };
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="flex flex-col gap-6">
@@ -32,36 +39,22 @@ export default function ApproveUserJobModal({
         )}
 
         <div className="flex flex-col items-center">
-          <div className="font-semibold mb-2">Vurdér løsning:</div>
-          <div className="flex gap-4 mb-4">
-            <Button
-              type="button"
-              variant={rating === 'godt' ? 'default' : 'secondary'}
-              onClick={() => setRating('godt')}
-            >
-              Godt
-            </Button>
-            <Button
-              type="button"
-              variant={rating === 'fint' ? 'default' : 'secondary'}
-              onClick={() => setRating('fint')}
-            >
-              Fint
-            </Button>
-            <Button
-              type="button"
-              variant={rating === 'skidt' ? 'default' : 'secondary'}
-              onClick={() => setRating('skidt')}
-            >
-              Skidt
-            </Button>
-            <Button
-              type="button"
-              variant={rating === 'fejlet' ? 'default' : 'secondary'}
-              onClick={() => setRating('fejlet')}
-            >
-              Fejlet
-            </Button>
+          <div className="font-semibold mb-4">Vurdér løsning:</div>
+          <div className="flex gap-4">
+            {(['godt', 'fint', 'skidt', 'fejlet'] as const).map((type) => (
+              <div key={type} className="flex flex-col items-center">
+                <Button
+                  type="button"
+                  variant={rating === type ? 'default' : 'secondary'}
+                  onClick={() => setRating(type)}
+                >
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </Button>
+                <span className="text-xs text-gray-500 mt-1">
+                  {type === 'fejlet' ? '0 kr.' : `${payouts[type]} kr.`}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
 

@@ -3,7 +3,6 @@ import { getUserProfiles } from '../api/user';
 import SolvedJobCard from '../components/approve-user-job-components/SolvedUserJobCard';
 import ApproveUserJobModal from '../modals/ApproveUserJobModal';
 import { approveJob, getSolvedJobs, markJobAsUnsolved } from '../api/user_job';
-import { Job } from '../types/job';
 import { toast } from 'sonner';
 import { User } from '../types/user';
 import { UserJob } from '../types/user_job';
@@ -102,6 +101,7 @@ const ApproveJob = () => {
           handleCloseApproveModal();
         }}
         imageSolvedUrl={selectedJob?.image_solved_url}
+        money={selectedJob?.money}
       />
     </div>
   );
