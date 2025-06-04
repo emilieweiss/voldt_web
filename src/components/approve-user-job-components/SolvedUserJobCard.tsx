@@ -21,10 +21,8 @@ function SolvedJobCard({ job, userName, onApproveClick }: SolvedJobCardProps) {
     >
       {/* title and description */}
       <div className="lg:col-span-5 pr-6 text-center lg:text-left">
-        <p className="mb-2 flex items-center gap-6 font-semibold">
-          <span className="break-words text-gray-500">
-            Bruger: {userName || job.user_id}
-          </span>
+        <p className="break-words text-gray-500 font-semibold mb-2 lg:mb-0">
+          Bruger: {userName || job.user_id}
         </p>
         <p className="text-xl font-semibold lg:mb-2 truncate">{job.title}</p>
         <p className="text-base text-gray-600 break-words whitespace-pre-line line-clamp-3 max-h-24 mb-2 lg:mb-0">
@@ -78,7 +76,7 @@ function SolvedJobCard({ job, userName, onApproveClick }: SolvedJobCardProps) {
           </div>
         </div>
       </div>
-      <div className="md:col-span-2 gap-2 flex items-center justify-center border-t py-3 md:py-0 md:border-t-0 md:border-l border-gray-300 h-full">
+      <div className="lg:col-span-2 gap-2 flex items-center justify-center border-t py-3 lg:py-0 lg:border-t-0 lg:border-l border-gray-300 h-full">
         <Button
           variant='round'
           onClick={onApproveClick}

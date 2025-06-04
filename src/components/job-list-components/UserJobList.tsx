@@ -15,7 +15,7 @@ function UserJobList({ profileName, jobs, onEdit }: UserJobListProps) {
   const isEditJobPage = location.pathname.includes('edit-job');
 
   return (
-    <div className="border border-(--border) rounded-xl p-4  bg-white min-w-85 w-85 relative">
+    <div className="border border-(--border) rounded-xl p-4  bg-white w-80 relative">
       {/* Header */}
       <div className="mb-4 relative flex items-center justify-between">
         <h2 className="w-full truncate">{profileName}</h2>

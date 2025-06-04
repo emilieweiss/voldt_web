@@ -130,11 +130,11 @@ const Home = () => {
 
       <h2 className="mb-2">Brugeroversigt</h2>
       <div className="overflow-x-auto">
-        <table className="min-w-[400px] w-full border rounded-lg text-lg">
+        <table className="w-full border rounded-lg text-lg">
           <thead>
             <tr className="bg-gray-100">
               <th className="py-2 px-4 text-left">Navn</th>
-              <th className="py-2 px-4 text-left">Færdiggjorte jobs</th>
+              <th className="py-2 px-4 text-left">Færdige jobs</th>
               <th className="py-2 px-4 text-left">Saldo (kr.)</th>
             </tr>
           </thead>
