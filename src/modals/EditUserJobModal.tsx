@@ -16,14 +16,14 @@ export default function EditUserJobModal({
   onClose: () => void;
   onSave: (updated: Partial<Job>) => void;
 }) {
-  const [adress, setAdress] = useState('');
+  const [address, setAddress] = useState('');
   const [duration, setDuration] = useState(0);
   const [delivery, setDelivery] = useState('');
   const [money, setMoney] = useState(0);
 
   useEffect(() => {
     if (job) {
-      setAdress(job.adress);
+      setAddress(job.address);
       setDuration(job.duration);
       setDelivery(job.delivery);
       setMoney(job.money);
@@ -42,7 +42,7 @@ export default function EditUserJobModal({
           e.preventDefault();
           onSave({
             id: job.id,
-            adress,
+            address,
             duration,
             delivery,
             money,
@@ -74,8 +74,8 @@ export default function EditUserJobModal({
             <Input
               type="text"
               className="w-full border rounded px-4 py-2"
-              value={adress}
-              onChange={(e) => setAdress(e.target.value)}
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
             />
           </div>
           {/* Varighed (redigerbar) */}

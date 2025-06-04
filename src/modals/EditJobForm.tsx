@@ -30,7 +30,7 @@ function EditJobForm({
     defaultValues: {
       title: job.title,
       description: job.description,
-      adress: job.adress,
+      address: job.address,
       duration: job.duration,
       delivery: job.delivery,
       money: job.money,
@@ -96,9 +96,9 @@ function EditJobForm({
         <Label className="block mb-2">Adresse</Label>
         <Input
           className="w-full mb-4"
-          {...register('adress', { required: true })}
+          {...register('address', { required: true })}
         />
-        {errors.adress && <span className="text-red-500">Påkrævet</span>}
+        {errors.address && <span className="text-red-500">Påkrævet</span>}
 
         <Label className="block mb-2">Varighed (min)</Label>
         <Input

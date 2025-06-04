@@ -2,7 +2,7 @@ export interface Job {
   id?: string;
   title: string;
   description: string;
-  adress: string;
+  address: string;
   duration: number;
   delivery: string; // 'HH:mm:ss'
   money: number; //how much money the job pays

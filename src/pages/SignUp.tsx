@@ -1,33 +1,30 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
-import * as userApi from '../api/user';
 import Label from '../components/ui/Label';
 import { toast } from 'sonner';
+import * as userApi from '../api/user';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { signUpSchema, SignUpSchema } from '../validation/signUpSchema';
 
 const SignUp = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<SignUpSchema>({
+    resolver: zodResolver(signUpSchema),
+  });
 
-    if (!email || !password) {
-      setError('Email og kodeord skal udfyldes');
-      return;
-    }
-
+  const onSubmit = async (data: SignUpSchema) => {
     try {
-      await userApi.signup(email, password, name);
+      await userApi.signup(data.email, data.password, data.name);
       navigate('/login');
       toast.success('Profil oprettet! Du kan nu logge ind.');
     } catch {
-      setError('Oprettelse fejlede');
       toast.error('Kunne ikke oprette profil. Prøv igen senere.');
     }
   };
@@ -38,39 +35,49 @@ const SignUp = () => {
       <h3 className="text-center mb-4 md:w-[340px]">
         Velkommen til! Indtast dine oplysninger for at oprette en ny bruger.
       </h3>
-      <form onSubmit={handleSubmit} className="space-y-4 md:w-sm w-full">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 md:w-sm w-full">
         <div>
           <Label className="block mb-1">Navn</Label>
           <Input
             type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            {...register('name')}
             required
             className="w-full"
           />
+          {errors.name && <div className="text-red-500 text-sm">{errors.name.message}</div>}
         </div>
         <div>
           <Label className="block mb-1">Email</Label>
           <Input
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            {...register('email')}
             required
             className="w-full"
           />
+          {errors.email && <div className="text-red-500 text-sm">{errors.email.message}</div>}
         </div>
         <div>
           <Label className="block mb-1">Kodeord</Label>
           <Input
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            {...register('password')}
             required
             className="w-full"
           />
+          {errors.password && <div className="text-red-500 text-sm">{errors.password.message}</div>}
         </div>
-        {error && <div className="text-red-500 text-sm">{error}</div>}
-        <Button type="submit" className="w-full mt-2 text-xl">
+        <div>
+          <Label className="block mb-1">Hemmelig kode</Label>
+          <Input
+            type="password"
+            {...register('secret')}
+            required
+            className="w-full"
+            placeholder="Indtast hemmelig kode"
+          />
+          {errors.secret && <div className="text-red-500 text-sm">{errors.secret.message}</div>}
+        </div>
+        <Button type="submit" className="w-full mt-2 text-xl" disabled={isSubmitting}>
           Opret profil
         </Button>
 
