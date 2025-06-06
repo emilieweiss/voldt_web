@@ -8,14 +8,15 @@ interface UserJobListProps {
   profileName: string;
   jobs: Job[];
   onEdit: () => void;
+  widthClass?: string;
 }
 
-function UserJobList({ profileName, jobs, onEdit }: UserJobListProps) {
+function UserJobList({ profileName, jobs, onEdit, widthClass = "w-80" }: UserJobListProps) {
   const location = useLocation();
   const isEditJobPage = location.pathname.includes('edit-job');
 
   return (
-    <div className="border border-(--border) rounded-xl p-4  bg-white w-80 relative">
+    <div className={`border border-(--border) rounded-xl p-4 bg-white relative ${widthClass}`}>
       {/* Header */}
       <div className="mb-4 relative flex items-center justify-between">
         <h2 className="w-full truncate">{profileName}</h2>

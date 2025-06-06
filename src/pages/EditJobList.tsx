@@ -77,11 +77,12 @@ const EditJobList = () => {
         {loading || !user ? (
           <BarLoader />
         ) : (
-          <div>
+          <div className=''>
             <UserJobList
               profileName={user.name}
               jobs={jobs}
-              onEdit={() => {}}
+              onEdit={() => { }}
+              widthClass='w-full'
             />
           </div>
         )}
