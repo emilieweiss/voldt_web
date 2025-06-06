@@ -101,7 +101,7 @@ const CreateJob = () => {
               id="sortby"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortBy)}
-              className=""
+              className="min-w-30"
             >
               <option value="title-asc">Titel (A-Å)</option>
               <option value="title-desc">Titel (Å-A)</option>
@@ -110,10 +110,10 @@ const CreateJob = () => {
             </Select>
             <Button
               onClick={() => setIsOpen(true)}
-              className="w-14 h-14 rounded-xl flex items-center justify-center p-0"
+              className="w-10 h-10 lg:w-14 lg:h-14 rounded-xl flex items-center justify-center p-0 flex-shrink-0"
               aria-label="Opret ny opgave"
             >
-              <Plus strokeWidth={5} size={64} />
+              <Plus strokeWidth={5} size={30} />
             </Button>
           </div>
         </div>

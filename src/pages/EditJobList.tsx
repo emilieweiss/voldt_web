@@ -46,7 +46,7 @@ const EditJobList = () => {
         user_id: user.id,
         title: jobToAssign.title,
         description: jobToAssign.description,
-        adress: jobToAssign.adress,
+        address: jobToAssign.address,
         duration: jobToAssign.duration,
         delivery: jobToAssign.delivery,
         image_solved_url: null,

@@ -4,7 +4,7 @@ export interface UserJob {
   job_id: string; // ID of the job that the user has to do
   title: string;
   description: string;
-  adress: string;
+  address: string;
   duration: number;
   delivery: string; // 'HH:mm:ss'
   image_solved_url?: string | null; // URL to the job image

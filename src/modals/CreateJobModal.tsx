@@ -21,7 +21,7 @@ interface CreateJobModalProps {
 
 type FormData = {
   title: string;
-  adress: string;
+  address: string;
   description: string;
   duration: number;
   delivery: string;
@@ -79,7 +79,7 @@ function CreateJobModal({
       <h1 className="text-2xl font-bold">Opret ny opgave</h1>
       <div className="border border-gray-100 my-2"></div>
       <form
-        className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-0 h-[50vh] md:mt-4 overflow-y-auto"
+        className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-0 h-[45vh] md:mt-4 overflow-y-auto"
         onSubmit={handleSubmit(onSubmit)}
       >
         {/* Left column */}
@@ -124,12 +124,12 @@ function CreateJobModal({
             />
             <Label
               htmlFor="file-upload"
-              className="cursor-pointer flex flex-col items-center"
+              className="flex flex-col items-center"
             >
-              <span className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-(--color-wolt-blue) hover:bg-(--color-wolt-medium-blue) transition-colors">
+              <span className="cursor-pointer inline-flex items-center justify-center w-16 h-16 rounded-full bg-(--color-wolt-blue) hover:bg-(--color-wolt-medium-blue) transition-colors">
                 <Plus size={38} strokeWidth={6} className="text-white" />
               </span>
-              <span className="mt-2 text-sm font-medium">Upload billede</span>
+              <span className="mt-2 text-sm font-medium cursor-pointer">Upload billede</span>
             </Label>
             {file && (
               <div className="flex items-center mt-2 w-full">
@@ -147,18 +147,18 @@ function CreateJobModal({
         </div>
 
         <div className="flex flex-col gap-6 col-span-1 md:border-l md:pl-6 border-gray-100">
-          {/* Adresse */}
+          {/* Address */}
           <div>
             <Label className="block mb-2">Adresse</Label>
             <Input
               type="text"
               placeholder="Jegerenadresse 23"
               className="w-full border rounded px-4 py-2"
-              {...register('adress', { required: true })}
+              {...register('address', { required: true })}
             />
-            {errors.adress && (
+            {errors.address && (
               <span className="text-red-500">
-                {errors.adress.message as string}
+                {errors.address.message as string}
               </span>
             )}
           </div>
@@ -213,7 +213,7 @@ function CreateJobModal({
         <div className="col-span-1 md:col-span-2 flex gap-6 justify-end w-full">
           <Button
             type="submit"
-            className="w-full md:w-1/4 text-lg"
+            className="w-full md:w-1/4 text-lg md:text-xl whitespace-nowrap min-h-14"
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Opretter...' : 'Opret opgave'}

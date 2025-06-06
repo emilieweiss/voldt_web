@@ -42,7 +42,7 @@ const JobList = () => {
   return (
     <div className="">
       <h1 className="pb-6">Jobliste</h1>
-      <div className="flex gap-4 flex-wrap justify-between">
+      <div className="flex gap-4 flex-wrap justify-center">
         {users.length === 0 ? (
           <BarLoader />
         ) : (

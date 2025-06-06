@@ -101,7 +101,7 @@ const ApproveJob = () => {
           handleCloseApproveModal();
         }}
         imageSolvedUrl={selectedJob?.image_solved_url}
-        money={selectedJob?.money}
+        money={selectedJob?.money ?? 0}
       />
     </div>
   );

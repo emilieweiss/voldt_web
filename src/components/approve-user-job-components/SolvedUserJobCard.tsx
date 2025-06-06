@@ -1,5 +1,6 @@
 import { Clock, Truck, BookUser, DollarSign, Check } from 'lucide-react';
 import { UserJob } from '../../types/user_job';
+import Button from '../ui/Button';
 
 interface SolvedJobCardProps {
   job: UserJob;
@@ -14,43 +15,41 @@ function SolvedJobCard({ job, userName, onApproveClick }: SolvedJobCardProps) {
         border border-gray-400 rounded-xl p-6 bg-gray-100
         grid gap-0 items-center
         grid-cols-1
-        md:grid-cols-15
+        lg:grid-cols-15
         overflow-x-auto
       "
     >
-      {/* Left Section */}
-      <div className="md:col-span-5 pr-6">
-        <p className="mb-2 flex items-center gap-6 font-semibold">
-          <span className="break-words text-gray-500">
-            Bruger: {userName || job.user_id}
-          </span>
+      {/* title and description */}
+      <div className="lg:col-span-5 pr-6 text-center lg:text-left">
+        <p className="break-words text-gray-500 font-semibold mb-2 lg:mb-0">
+          Bruger: {userName || job.user_id}
         </p>
-        <p className="text-xl font-semibold mb-2 truncate">{job.title}</p>
-        <p className="text-base text-gray-600 break-words whitespace-pre-line line-clamp-3 max-h-24">
+        <p className="text-xl font-semibold lg:mb-2 truncate">{job.title}</p>
+        <p className="text-base text-gray-600 break-words whitespace-pre-line line-clamp-3 max-h-24 mb-2 lg:mb-0">
           {job.description}
         </p>
       </div>
 
-      {/* Middle Section */}
-      <div className="md:col-span-4 pr-6 border-t py-3 md:py-0 md:border-t-0 md:border-l border-gray-300 h-full flex flex-col justify-center">
-        <div className="text-sm md:pl-6">
-          <p className="mb-2 flex items-center gap-6 font-semibold">
+      {/* duration, time, address */}
+      <div className="lg:col-span-4 pr-6 border-t py-3 lg:py-0 lg:border-t-0 lg:border-l border-gray-300 h-full justify-center lg:justify-start items-center flex">
+        <div className="text-sm grid grid-cols-[40px_1fr] pl-6 gap-2">
+          {/* Icons column */}
+          <div className="flex flex-col items-center gap-y-2">
             <Clock className="w-5 h-5 flex-shrink-0" />
-            {job.duration}
-          </p>
-          <p className="mb-2 flex items-center gap-6 font-semibold">
             <Truck className="w-5 h-5 flex-shrink-0" />
-            {job.delivery?.slice(0, 5)}
-          </p>
-          <p className="mb-2 flex items-center gap-6 font-semibold">
             <BookUser className="w-5 h-5 flex-shrink-0" />
-            <span className="break-words">{job.adress}</span>
-          </p>
+          </div>
+          {/* Text column */}
+          <div className="flex flex-col items-start gap-y-2 w-full">
+            <span className="font-semibold">{job.duration}</span>
+            <span className="font-semibold">{job.delivery?.slice(0, 5)}</span>
+            <span className="font-semibold">{job.address}</span>
+          </div>
         </div>
       </div>
 
       {/* Economy Section */}
-      <div className="md:col-span-4 px-6 border-t py-3 md:py-0 md:border-t-0 md:border-l border-gray-300 h-full flex flex-col justify-center">
+      <div className="lg:col-span-4 px-6 border-t py-3 lg:py-0 lg:border-t-0 lg:border-l border-gray-300 h-full flex flex-col justify-center">
         <div className="grid grid-cols-4 grid-rows-3 w-full text-center">
           {/* Row 1: Dollar sign and "Økonomi" spanning all columns */}
           <div className="col-span-4 flex items-center justify-start mb-2 row-span-1">
@@ -77,13 +76,13 @@ function SolvedJobCard({ job, userName, onApproveClick }: SolvedJobCardProps) {
           </div>
         </div>
       </div>
-      <div className="md:col-span-2 gap-2 flex items-center justify-center border-t py-3 md:py-0 md:border-t-0 md:border-l border-gray-300 h-full">
-        <button
-          className="bg-(--color-wolt-blue) rounded-full p-2 text-white hover:bg-(--color-wolt-medium-blue) cursor-pointer"
+      <div className="lg:col-span-2 gap-2 flex items-center justify-center border-t py-3 lg:py-0 lg:border-t-0 lg:border-l border-gray-300 h-full">
+        <Button
+          variant='round'
           onClick={onApproveClick}
         >
           <Check />
-        </button>
+        </Button>
       </div>
     </div>
   );

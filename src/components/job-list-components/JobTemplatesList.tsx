@@ -7,6 +7,7 @@ import Searchbar from '../ui/Searchbar';
 import Select from '../ui/Select';
 import Label from '../ui/Label';
 import { toast } from 'sonner';
+import Button from '../ui/Button';
 
 export default function JobTemplatesList({
   onPickJob,
@@ -91,22 +92,22 @@ export default function JobTemplatesList({
         <ul className="divide-y-1 divide-(--border) mt-4">
           {sortedJobs.map((job) => (
             <li key={job.id} className="flex items-center justify-between py-4">
-              <div className="w-full grid grid-row-2 flex items-center">
+              <div className="w-full grid grid-row-2 items-center">
                 <div className="font-semibold truncate">{job.title}</div>
                 <div className="text-gray-600 text-sm break-words whitespace-pre-line line-clamp-3 max-h-24">
                   {job.description}
                 </div>
               </div>
-              <button
-                type="button"
-                className="bg-(--color-wolt-blue) text-white rounded-full w-9 h-9 flex items-center justify-center cursor-pointer hover:bg-(--color-wolt-medium-blue) transition-colors ml-4"
+              <Button
+                variant='round'
+                className="ml-4"
                 onClick={() => {
                   setSelectedJob(job);
                   setModalOpen(true);
                 }}
               >
                 <SendHorizonal size={20} />
-              </button>
+              </Button>
             </li>
           ))}
         </ul>

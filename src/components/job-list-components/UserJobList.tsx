@@ -2,6 +2,7 @@ import { Pencil } from 'lucide-react';
 import { Job } from '../../types/job';
 import JobCardMini from './JobCardMini';
 import { useLocation } from 'react-router';
+import Button from '../ui/Button';
 
 interface UserJobListProps {
   profileName: string;
@@ -14,19 +15,19 @@ function UserJobList({ profileName, jobs, onEdit }: UserJobListProps) {
   const isEditJobPage = location.pathname.includes('edit-job');
 
   return (
-    <div className="border border-(--border) rounded-xl p-4  bg-white min-w-85 w-85 relative">
+    <div className="border border-(--border) rounded-xl p-4  bg-white w-80 relative">
       {/* Header */}
       <div className="mb-4 relative flex items-center justify-between">
-        <h2 className="">{profileName}</h2>
+        <h2 className="w-full truncate">{profileName}</h2>
         {!isEditJobPage && (
-          <button
+          <Button
             onClick={onEdit}
-            className="bg-(--color-wolt-blue) text-white rounded-full w-9 h-9 flex items-center justify-center cursor-pointer hover:bg-(--color-wolt-medium-blue) transition-colors"
+            className="flex-shrink-0"
+            variant='round'
             aria-label="Rediger bruger"
-            type="button"
           >
             <Pencil size={20} />
-          </button>
+          </Button>
         )}
       </div>
 
