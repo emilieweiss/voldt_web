@@ -29,5 +29,4 @@ jobs:
           port: 21
           local-dir: dist/
           server-dir: /voldt/
-          concurrent-uploads: 1
           timeout: 190000
