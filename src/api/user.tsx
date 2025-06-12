@@ -38,3 +38,9 @@ export async function getUserProfiles() {
   if (error) throw error;
   return data;
 }
+
+export async function deleteUserProfile(userId: string) {
+  const { error } = await supabase.from('profiles').delete().eq('id', userId);
+  if (error) throw error;
+  return true;
+}

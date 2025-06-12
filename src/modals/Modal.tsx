@@ -16,7 +16,7 @@ function Modal({ isOpen, onClose, children }: ModalProps) {
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 bg-opacity-40 max-w-screen max-h-screen overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 bg-opacity-40 max-w-screen max-h-screen overflow-y-auto"
       onMouseDown={(e) => {
         if (e.target === overlayRef.current) {
           mouseDownTarget.current = e.target;
