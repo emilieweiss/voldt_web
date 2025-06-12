@@ -23,6 +23,6 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           port: 21
-          local-dir: build/
+          local-dir: dist/
           server-dir: /voldt/
           timeout: 190000
