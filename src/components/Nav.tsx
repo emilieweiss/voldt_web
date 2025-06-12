@@ -22,7 +22,7 @@ function Navbar() {
       <div className="text-4xl font-bold text-(--color-wolt-blue)">voldt</div>
       {/* Burger menu button - only visible on lg and smaller */}
       <button
-        className="lg:hidden flex items-center justify-center"
+        className="md:hidden flex items-center justify-center"
         onClick={() => setMenuOpen((open) => !open)}
         aria-label="Åben menu"
         type="button"
@@ -32,7 +32,7 @@ function Navbar() {
       {/* Desktop menu - only visible on lg and up */}
       {isLoggedIn ? (
         <>
-          <div className="hidden lg:flex items-center space-x-8 text-sm">
+          <div className="hidden md:flex items-center space-x-8 text-sm">
             <Link to="/" className={linkClass('/')}>
               Hjem
             </Link>
@@ -54,7 +54,7 @@ function Navbar() {
           </div>
         </>
       ) : (
-        <div className="hidden lg:flex items-center space-x-4 ml-auto">
+        <div className="hidden md:flex items-center space-x-4 ml-auto">
           <Link to="/login" className="text-sm font-semibold">
             Login
           </Link>
@@ -65,34 +65,70 @@ function Navbar() {
       )}
       {/* Mobile menu - only visible on lg and smaller, when open */}
       {menuOpen && (
-        <div className="lg:hidden absolute top-full left-0 w-full bg-white flex flex-col items-center space-y-4 py-4 border-b-1 border-(--border) z-50">
+        <div className="md:hidden absolute top-full left-0 w-full bg-white flex flex-col items-center space-y-4 py-4 border-b-1 border-(--border) z-50">
           {isLoggedIn ? (
             <>
-              <Link to="/" className={linkClass('/')} onClick={() => setMenuOpen(false)}>
+              <Link
+                to="/"
+                className={linkClass('/')}
+                onClick={() => setMenuOpen(false)}
+              >
                 Hjem
               </Link>
-              <Link to="/create-job" className={linkClass('/create-job')} onClick={() => setMenuOpen(false)}>
+              <Link
+                to="/create-job"
+                className={linkClass('/create-job')}
+                onClick={() => setMenuOpen(false)}
+              >
                 Opret job
               </Link>
-              <Link to="/job-list" className={linkClass('/job-list')} onClick={() => setMenuOpen(false)}>
+              <Link
+                to="/job-list"
+                className={linkClass('/job-list')}
+                onClick={() => setMenuOpen(false)}
+              >
                 Jobliste
               </Link>
-              <Link to={`/edit-job/`} className={linkClass('/edit-job/')} onClick={() => setMenuOpen(false)}>
+              <Link
+                to={`/edit-job/`}
+                className={linkClass('/edit-job/')}
+                onClick={() => setMenuOpen(false)}
+              >
                 Rediger jobliste
               </Link>
-              <Link to={`/approve`} className={linkClass('/approve')} onClick={() => setMenuOpen(false)}>
+              <Link
+                to={`/approve`}
+                className={linkClass('/approve')}
+                onClick={() => setMenuOpen(false)}
+              >
                 Godkend job
               </Link>
-              <Button className="w-25" onClick={() => { setMenuOpen(false); logout(); }}>
+              <Button
+                className="w-25"
+                onClick={() => {
+                  setMenuOpen(false);
+                  logout();
+                }}
+              >
                 Log ud
               </Button>
             </>
           ) : (
             <>
-              <Link to="/login" className="text-sm font-semibold" onClick={() => setMenuOpen(false)}>
+              <Link
+                to="/login"
+                className="text-sm font-semibold"
+                onClick={() => setMenuOpen(false)}
+              >
                 Login
               </Link>
-              <Button className="" onClick={() => { setMenuOpen(false); navigate('/signup'); }}>
+              <Button
+                className=""
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigate('/signup');
+                }}
+              >
                 Opret profil
               </Button>
             </>
