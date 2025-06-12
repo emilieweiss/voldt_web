@@ -9,7 +9,7 @@ import { UserJob } from '../types/user_job';
 import Label from '../components/ui/Label';
 import Select from '../components/ui/Select';
 import Button from '../components/ui/Button';
-import { Pencil, X } from 'lucide-react';
+import { Pencil } from 'lucide-react';
 import Searchbar from '../components/ui/Searchbar';
 import DeleteUserModal from '../modals/DeleteUserModal';
 import Modal from '../modals/Modal';
