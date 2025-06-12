@@ -60,8 +60,8 @@ const ApproveJob = () => {
   const userMap = Object.fromEntries(users.map((u: User) => [u.id, u.name]));
 
   return (
-    <div className="p-0">
-      <h1 className="text-2xl font-bold mb-6">Godkend færdige jobs</h1>
+    <div className="flex flex-col">
+      <h1 className="mb-4 ">Godkend færdige jobs</h1>
       {loading ? (
         <div>Indlæser...</div>
       ) : solvedJobs.length === 0 ? (

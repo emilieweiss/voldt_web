@@ -79,7 +79,7 @@ function CreateJobModal({
       <h1 className="text-2xl font-bold">Opret ny opgave</h1>
       <div className="border border-gray-100 my-2"></div>
       <form
-        className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-0 h-[45vh] md:mt-4 overflow-y-auto"
+        className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-0 h-[50vh] md:mt-4 overflow-y-auto"
         onSubmit={handleSubmit(onSubmit)}
       >
         {/* Left column */}
@@ -122,14 +122,13 @@ function CreateJobModal({
               className="hidden"
               onChange={(e) => setFile(e.target.files?.[0] || null)}
             />
-            <Label
-              htmlFor="file-upload"
-              className="flex flex-col items-center"
-            >
+            <Label htmlFor="file-upload" className="flex flex-col items-center">
               <span className="cursor-pointer inline-flex items-center justify-center w-16 h-16 rounded-full bg-(--color-wolt-blue) hover:bg-(--color-wolt-medium-blue) transition-colors">
                 <Plus size={38} strokeWidth={6} className="text-white" />
               </span>
-              <span className="mt-2 text-sm font-medium cursor-pointer">Upload billede</span>
+              <span className="mt-2 text-sm font-medium cursor-pointer">
+                Upload billede
+              </span>
             </Label>
             {file && (
               <div className="flex items-center mt-2 w-full">
