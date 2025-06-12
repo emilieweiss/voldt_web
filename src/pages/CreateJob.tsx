@@ -11,6 +11,8 @@ import { toast } from 'sonner';
 import Searchbar from '../components/ui/Searchbar';
 import Label from '../components/ui/Label';
 
+type SortBy = 'title-asc' | 'title-desc' | 'money-asc' | 'money-desc';
+
 const CreateJob = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,8 +64,6 @@ const CreateJob = () => {
   useEffect(() => {
     fetchJobs();
   }, []);
-
-  type SortBy = 'title-asc' | 'title-desc' | 'money-asc' | 'money-desc';
 
   const filteredJobs = jobs.filter(
     (job) =>
