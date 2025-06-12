@@ -15,9 +15,9 @@ jobs:
           npm install
           npm run build
         env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_API_URL }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_KEY: ${{ secrets.VITE_KEY }}
-          VITE_SECRET_CODE: ${{ secrets.VITE_MODE }}
+          VITE_SECRET_CODE: ${{ secrets.VITE_SECRET_CODE }}
 
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
