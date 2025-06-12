@@ -132,13 +132,18 @@ const Home = () => {
           loadData();
         },
       )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'profiles' },
+        (payload) => {
+          console.log('Realtime event (profiles):', payload);
+          loadData();
+        },
+      )
       .subscribe();
-
-    // const interval = setInterval(loadData, 1000 * 60); // refresh every minute
 
     return () => {
       supabase.removeChannel(channel);
-      // clearInterval(interval);
     };
   }, [loadData]);
 
