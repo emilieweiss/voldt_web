@@ -2,6 +2,10 @@
 
 @plugin "tailwindcss-animate";
 
+[data-sonner-toast][data-type='error'] {
+  color: #dc2626 !important;
+}
+
 @font-face {
   font-family: 'Omnes';
   font-style: normal;
