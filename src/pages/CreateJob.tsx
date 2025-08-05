@@ -118,7 +118,9 @@ const CreateJob = () => {
             </Button>
           </div>
         </div>
-        {loading && <BarLoader />}
+        {loading && <div className="flex justify-center">
+          <BarLoader />
+        </div>}
         {error && <div className="text-red-500">{error}</div>}
         {!loading &&
           !error &&

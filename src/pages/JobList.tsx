@@ -112,7 +112,9 @@ const JobList = () => {
       </div>
       <div className="flex gap-4 flex-wrap justify-center md:justify-start">
         {users.length === 0 ? (
-          <BarLoader />
+          <div className="flex justify-center">
+            <BarLoader />
+          </div>
         ) : (
           [...sortedUsers].map((user: User) => (
             <UserJobList

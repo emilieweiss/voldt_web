@@ -22,6 +22,7 @@ import {
 } from '../types/chart_data';
 import { User } from '../types/user';
 import { UserJob } from '../types/user_job';
+import BarLoader from 'react-spinners/BarLoader';
 
 const colors = ['#8884d8', '#82ca9d', '#ffc658', '#f97316', '#10b981'];
 
@@ -150,6 +151,9 @@ const Home = () => {
   return (
     <div className="">
       <h1>Statistik</h1>
+      {chartUsers.length < 1 && <div className="flex justify-center">
+        <BarLoader />
+      </div>}
       <h2 className="mb-2">Brugeroversigt</h2>
       <div className="overflow-x-auto">
         <table className="w-full border rounded-lg text-lg">

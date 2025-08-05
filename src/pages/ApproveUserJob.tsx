@@ -64,7 +64,9 @@ const ApproveJob = () => {
     <div className="flex flex-col">
       <h1 className="mb-4 ">Godkend færdige jobs</h1>
       {loading ? (
-        <BarLoader />
+        <div className="flex justify-center">
+          <BarLoader />
+        </div>
       ) : solvedJobs.length === 0 ? (
         <div>Ingen jobs fundet.</div>
       ) : (
@@ -102,6 +104,7 @@ const ApproveJob = () => {
           handleCloseApproveModal();
         }}
         imageSolvedUrl={selectedJob?.image_solved_url}
+        loading={loading}
         money={selectedJob?.money ?? 0}
       />
     </div>

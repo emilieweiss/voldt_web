@@ -79,7 +79,9 @@ const EditJobList = () => {
       <div className="w-full md:w-150 md:min-w-sm">
         <h1 className="mb-6">Rediger jobliste</h1>
         {loading || !user ? (
-          <BarLoader />
+          <div className="flex justify-center">
+            <BarLoader />
+          </div>
         ) : (
           <div>
             <UserJobListEdit

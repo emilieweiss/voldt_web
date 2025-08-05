@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Modal from './Modal';
 import Button from '../components/ui/Button';
+import { BarLoader } from 'react-spinners';
 
 export default function ApproveUserJobModal({
   isOpen,
@@ -8,12 +9,14 @@ export default function ApproveUserJobModal({
   onApprove,
   imageSolvedUrl,
   money,
+  loading,
 }: {
   isOpen: boolean;
   onClose: () => void;
   onApprove: (rating: 'godt' | 'fint' | 'skidt' | 'fejlet') => void;
   imageSolvedUrl?: string | null;
   money: number;
+  loading: boolean;
 }) {
   const [rating, setRating] = useState<
     'godt' | 'fint' | 'skidt' | 'fejlet' | null
@@ -28,7 +31,11 @@ export default function ApproveUserJobModal({
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="flex flex-col gap-6">
         <h2 className="text-xl font-bold">Godkend løsning</h2>
-        {imageSolvedUrl ? (
+        {loading ? (
+          <div className="flex justify-center">
+            <BarLoader />
+          </div>
+        ) : imageSolvedUrl ? (
           <img
             src={imageSolvedUrl}
             alt="Løsning"

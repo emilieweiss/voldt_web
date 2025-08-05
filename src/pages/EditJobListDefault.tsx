@@ -29,7 +29,9 @@ const EditJobListDefault = () => {
     <div className="">
       <h1 className="mb-6">Vælg bruger for at redigere jobliste</h1>
       {loading ? (
-        <BarLoader />
+        <div className="flex justify-center">
+          <BarLoader />
+        </div>
       ) : (
         <CustomSearchableSelect
           options={userOptions}
