@@ -28,7 +28,7 @@ function JobCardDetailed({
       "
     >
       {/* title and description */}
-      <div className="lg:col-span-5 pr-6 text-center lg:text-left">
+      <div className="lg:col-span-5 lg:pr-6 text-center lg:text-left">
         <p className="text-xl font-semibold lg:mb-2 truncate">{job.title}</p>
         <p className="text-base text-gray-600 break-words whitespace-pre-line line-clamp-3 max-h-24 mb-2 lg:mb-0">
           {job.description}
@@ -57,7 +57,7 @@ function JobCardDetailed({
       <div className="lg:col-span-4 px-6 border-t py-3 lg:py-0 lg:border-t-0 lg:border-l border-gray-300 h-full flex flex-col justify-center">
         <div className="grid grid-cols-4 grid-rows-3 w-full text-center">
           {/* Row 1: Dollar sign and "Økonomi" spanning all columns */}
-          <div className="col-span-4 flex items-center justify-start mb-2 row-span-1">
+          <div className="col-span-4 flex items-center justify-center lg:justify-start mb-2 row-span-1">
             <DollarSign className="w-5 h-5 mr-2" />
             <span className="font-semibold">Økonomi</span>
           </div>
