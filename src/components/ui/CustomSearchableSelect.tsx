@@ -82,7 +82,7 @@ export default function CustomSearchableSelect({ options, placeholder, onChange 
                     setOpen(false);
                     setSearch('');
                   }}
-                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100"
+                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-200"
                 >
                   {opt.label}
                 </li>
