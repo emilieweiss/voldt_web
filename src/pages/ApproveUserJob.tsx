@@ -6,6 +6,7 @@ import { approveJob, getSolvedJobs, markJobAsUnsolved } from '../api/user_job';
 import { toast } from 'sonner';
 import { User } from '../types/user';
 import { UserJob } from '../types/user_job';
+import BarLoader from 'react-spinners/BarLoader';
 
 const ApproveJob = () => {
   const [solvedJobs, setSolvedJobs] = useState<UserJob[]>([]);
@@ -63,7 +64,7 @@ const ApproveJob = () => {
     <div className="flex flex-col">
       <h1 className="mb-4 ">Godkend færdige jobs</h1>
       {loading ? (
-        <div>Indlæser...</div>
+        <BarLoader />
       ) : solvedJobs.length === 0 ? (
         <div>Ingen jobs fundet.</div>
       ) : (

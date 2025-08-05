@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import { getUserProfiles } from '../api/user';
 import { User } from '../types/user';
 import CustomSearchableSelect from '../components/ui/CustomSearchableSelect';
+import BarLoader from 'react-spinners/BarLoader';
 
 const EditJobListDefault = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -28,7 +29,7 @@ const EditJobListDefault = () => {
     <div className="">
       <h1 className="mb-6">Vælg bruger for at redigere jobliste</h1>
       {loading ? (
-        <p></p>
+        <BarLoader />
       ) : (
         <CustomSearchableSelect
           options={userOptions}

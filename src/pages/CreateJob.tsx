@@ -10,6 +10,7 @@ import Select from '../components/ui/Select';
 import { toast } from 'sonner';
 import Searchbar from '../components/ui/Searchbar';
 import Label from '../components/ui/Label';
+import BarLoader from 'react-spinners/BarLoader';
 
 type SortBy = 'title-asc' | 'title-desc' | 'money-asc' | 'money-desc';
 
@@ -117,7 +118,7 @@ const CreateJob = () => {
             </Button>
           </div>
         </div>
-        {loading && <div>Indlæser jobs...</div>}
+        {loading && <BarLoader />}
         {error && <div className="text-red-500">{error}</div>}
         {!loading &&
           !error &&
