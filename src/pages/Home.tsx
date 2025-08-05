@@ -38,7 +38,7 @@ const Home = () => {
 
     const chartUsers = [...profiles]
       .map((user) => ({
-        name: user.name,
+        name: user.name.length > 15 ? user.name.slice(0, 15) + '...' : user.name,
         id: user.id,
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
@@ -102,7 +102,7 @@ const Home = () => {
 
     // Original mapping
     const unsortedBarData = profiles.map((user) => ({
-      name: user.name,
+      name: user.name.length > 15 ? user.name.slice(0, 15) + '...' : user.name,
       jobs: jobCounts[user.id] || 0,
       money: moneyEarned[user.id] || 0,
     }));
@@ -215,7 +215,7 @@ const Home = () => {
               />
               <YAxis dataKey="name" type="category" />
               <Tooltip />
-              <Bar dataKey="jobs">
+              <Bar dataKey="jobs" name="Jobs">
                 {barData.map((_entry, index) => (
                   <Cell
                     key={`cell-jobs-${index}`}
@@ -246,7 +246,7 @@ const Home = () => {
               />
               <YAxis dataKey="name" type="category" />
               <Tooltip />
-              <Bar dataKey="money">
+              <Bar dataKey="money" name="Indtjening (kr.)">
                 {barData.map((_entry, index) => (
                   <Cell
                     key={`cell-money-${index}`}
