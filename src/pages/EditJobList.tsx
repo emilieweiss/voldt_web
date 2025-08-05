@@ -2,13 +2,13 @@ import { useParams } from 'react-router';
 import { useEffect, useState } from 'react';
 import { getUserProfiles } from '../api/user';
 import { getUserJobs, assignJobToUser } from '../api/user_job';
-import UserJobList from '../components/job-list-components/UserJobList';
 import JobTemplatesList from '../components/job-list-components/JobTemplatesList';
 import { Job } from '../types/job';
 import { BarLoader } from 'react-spinners';
 import { toast } from 'sonner';
 import { User } from '../types/user';
 import { UserJob } from '../types/user_job';
+import UserJobListEdit from '../components/job-list-components/UserJobListEdit';
 
 const EditJobList = () => {
   const { id } = useParams<{ id: string }>();
@@ -33,6 +33,10 @@ const EditJobList = () => {
     }
     if (id) fetchUserAndJobs();
   }, [id]);
+
+  const handleJobRemoved = (jobId: string) => {
+    setJobs(prevJobs => prevJobs.filter(job => job.id !== jobId));
+  };
 
   const handleAssignJob = async (jobToAssign: Job) => {
     try {
@@ -77,12 +81,13 @@ const EditJobList = () => {
         {loading || !user ? (
           <BarLoader />
         ) : (
-          <div className=''>
-            <UserJobList
+          <div>
+            <UserJobListEdit
               profileName={user.name}
               jobs={jobs}
               onEdit={() => { }}
               widthClass='w-full'
+              onJobRemoved={handleJobRemoved}
             />
           </div>
         )}
