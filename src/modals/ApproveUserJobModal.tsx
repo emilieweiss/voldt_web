@@ -41,7 +41,7 @@ export default function ApproveUserJobModal({
         <div className="flex flex-col items-center">
           <div className="font-semibold mb-4">Vurdér løsning:</div>
           <div className="flex gap-4">
-            {(['godt', 'fint', 'skidt', 'fejlet'] as const).map((type) => (
+            {(['fejlet', 'skidt', 'fint', 'godt'] as const).map((type) => (
               <div key={type} className="flex flex-col items-center">
                 <Button
                   type="button"

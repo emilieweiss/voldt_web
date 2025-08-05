@@ -57,22 +57,22 @@ function SolvedJobCard({ job, userName, onApproveClick }: SolvedJobCardProps) {
             <span className="font-semibold">Økonomi</span>
           </div>
           {/* Row 2: Labels */}
-          <p className="row-start-2 font-semibold text-base">Godt</p>
-          <p className="row-start-2 font-semibold text-base">Fint</p>
-          <p className="row-start-2 font-semibold text-base">Skidt</p>
           <p className="row-start-2 font-semibold text-base">Fejlet</p>
+          <p className="row-start-2 font-semibold text-base">Skidt</p>
+          <p className="row-start-2 font-semibold text-base">Fint</p>
+          <p className="row-start-2 font-semibold text-base">Godt</p>
           {/* Row 3: Values */}
-          <div className="row-start-3 flex justify-center items-center">
-            {job.money}
-          </div>
-          <div className="border-l border-gray-300 row-start-3 flex justify-center items-center">
-            {Math.round(job.money * 0.667)}
+          <div className=" row-start-3 flex justify-center items-center">
+            0
           </div>
           <div className="border-l border-gray-300 row-start-3 flex justify-center items-center">
             {Math.round(job.money * 0.33)}
           </div>
           <div className="border-l border-gray-300 row-start-3 flex justify-center items-center">
-            0
+            {Math.round(job.money * 0.667)}
+          </div>
+          <div className="border-l border-gray-300 row-start-3 flex justify-center items-center">
+            {job.money}
           </div>
         </div>
       </div>
