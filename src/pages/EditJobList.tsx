@@ -1,6 +1,6 @@
 import { useParams } from 'react-router';
-import { useEffect, useState } from 'react';
-import { getUserProfiles } from '../api/user';
+import { useEffect, useState, useCallback } from 'react';
+import { getUserProfiles, supabase } from '../api/user';
 import { getUserJobs, assignJobToUser } from '../api/user_job';
 import JobTemplatesList from '../components/job-list-components/JobTemplatesList';
 import { Job } from '../types/job';
@@ -16,23 +16,64 @@ const EditJobList = () => {
   const [jobs, setJobs] = useState<UserJob[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchUserAndJobs() {
-      setLoading(true);
-      try {
-        const users = await getUserProfiles();
-        const foundUser = users.find((u: User) => u.id === id);
-        setUser(foundUser);
-        if (foundUser) {
-          const userJobs = await getUserJobs(foundUser.id);
-          setJobs(userJobs || []);
-        }
-      } finally {
-        setLoading(false);
+  const initialLoad = useCallback(async () => {
+    setLoading(true);
+    try {
+      const users = await getUserProfiles();
+      const foundUser = users.find((u: User) => u.id === id);
+      setUser(foundUser);
+      if (foundUser) {
+        const userJobs = await getUserJobs(foundUser.id);
+        setJobs(userJobs || []);
       }
+    } finally {
+      setLoading(false);
     }
-    if (id) fetchUserAndJobs();
   }, [id]);
+
+  const updateData = useCallback(async () => {
+    try {
+      const users = await getUserProfiles();
+      const foundUser = users.find((u: User) => u.id === id);
+      setUser(foundUser);
+      if (foundUser) {
+        const userJobs = await getUserJobs(foundUser.id);
+        setJobs(userJobs || []);
+      }
+    } catch (err) {
+      console.error('Error updating data:', err);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+
+    initialLoad();
+
+    const channel = supabase
+      .channel('edit_job_list_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'user_jobs' },
+        (payload) => {
+          console.log('Realtime event (user_jobs):', payload);
+          updateData();
+        },
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'profiles' },
+        (payload) => {
+          console.log('Realtime event (profiles):', payload);
+          updateData();
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [id, initialLoad, updateData]);
 
   const handleJobRemoved = (jobId: string) => {
     setJobs(prevJobs => prevJobs.filter(job => job.id !== jobId));
@@ -60,8 +101,6 @@ const EditJobList = () => {
       };
       await assignJobToUser(userJob);
       toast.success(`Job tilføjet til bruger: ${user.name}`);
-      const userJobs = await getUserJobs(user.id);
-      setJobs(userJobs ?? []);
     } catch (err: unknown) {
       toast.error('Kunne ikke tilføje job til bruger');
       if (err instanceof Error) {

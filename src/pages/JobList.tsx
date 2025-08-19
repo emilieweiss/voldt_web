@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { deleteUserProfile, getUserProfiles } from '../api/user';
+import { deleteUserProfile, getUserProfiles, supabase } from '../api/user';
 import { getUserJobs } from '../api/user_job';
 import UserJobList from '../components/job-list-components/UserJobList';
 import { BarLoader } from 'react-spinners';
@@ -20,31 +20,77 @@ type SortBy = 'name-asc' | 'name-desc' | 'money-asc' | 'money-desc';
 const JobList = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [userJobs, setUserJobs] = useState<{ [userId: string]: UserJob[] }>({});
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState<SortBy>('name-asc');
   const { id } = useParams<{ id: string }>();
 
-  useEffect(() => {
-    async function fetchUsersAndJobs() {
-      try {
-        const fetchedUsers = await getUserProfiles();
-        setUsers(fetchedUsers || []);
-        const jobsByUser: { [userId: string]: UserJob[] } = {};
-        for (const user of fetchedUsers || []) {
-          try {
-            jobsByUser[user.id] = await getUserJobs(user.id);
-          } catch {
-            jobsByUser[user.id] = [];
-          }
+  const initialLoad = useCallback(async () => {
+    setLoading(true);
+    try {
+      const fetchedUsers = await getUserProfiles();
+      setUsers(fetchedUsers || []);
+      const jobsByUser: { [userId: string]: UserJob[] } = {};
+      for (const user of fetchedUsers || []) {
+        try {
+          jobsByUser[user.id] = await getUserJobs(user.id);
+        } catch {
+          jobsByUser[user.id] = [];
         }
-        setUserJobs(jobsByUser);
-      } finally {
       }
+      setUserJobs(jobsByUser);
+    } finally {
+      setLoading(false);
     }
-    fetchUsersAndJobs();
   }, []);
+
+  const updateData = useCallback(async () => {
+    try {
+      const fetchedUsers = await getUserProfiles();
+      setUsers(fetchedUsers || []);
+      const jobsByUser: { [userId: string]: UserJob[] } = {};
+      for (const user of fetchedUsers || []) {
+        try {
+          jobsByUser[user.id] = await getUserJobs(user.id);
+        } catch {
+          jobsByUser[user.id] = [];
+        }
+      }
+      setUserJobs(jobsByUser);
+    } catch (err) {
+      console.error('Error updating data:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    initialLoad();
+
+    const channel = supabase
+      .channel('job_list_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'user_jobs' },
+        (payload) => {
+          console.log('Realtime event (user_jobs):', payload);
+          updateData();
+        },
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'profiles' },
+        (payload) => {
+          console.log('Realtime event (profiles):', payload);
+          updateData();
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [initialLoad, updateData]);
 
   const handleEdit = (userId: string) => {
     navigate(`/edit-job/${userId}`);
@@ -52,7 +98,7 @@ const JobList = () => {
 
   const handleDeleteUser = async (userId: string) => {
     try {
-      await deleteUserProfile(userId); // Call API to delete user in DB
+      await deleteUserProfile(userId);
       setUsers((prev) => prev.filter((u) => u.id !== userId));
       setUserJobs((prev) => {
         const newJobs = { ...prev };
@@ -80,27 +126,25 @@ const JobList = () => {
     <div className="">
       <h1 className="mb-4">Jobliste</h1>
       <div className="flex items-center gap-x-4 mb-4">
-        {/* Search bar on the left */}
         <Searchbar
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full md:w-1/3"
         />
 
-        {/* Sort and + button on the right */}
         <div className="flex items-center gap-4 ml-auto">
-          <Label htmlFor="sortby" className="text-sm font-semibold">
+          <label htmlFor="sortby" className="text-sm font-semibold sm:whitespace-nowrap">
             Sortér efter:
-          </Label>
+          </label>
           <Select
-            id="sortby"
+            options={[
+              { value: 'name-asc', label: 'Navn (A-Å)' },
+              { value: 'name-desc', label: 'Navn (Å-A)' },
+            ]}
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as SortBy)}
-            className="min-w-30"
-          >
-            <option value="name-asc">Navn (A-Å)</option>
-            <option value="name-desc">Navn (Å-A)</option>
-          </Select>
+            onChange={(value) => setSortBy(value as SortBy)}
+            className="w-[80px] sm:w-[185px]"
+          />
           <Button
             onClick={() => setIsOpen(true)}
             className="w-10 h-10 lg:w-14 lg:h-14 rounded-xl flex items-center justify-center p-0 flex-shrink-0"
@@ -110,10 +154,15 @@ const JobList = () => {
           </Button>
         </div>
       </div>
+
       <div className="flex gap-4 flex-wrap justify-center md:justify-start">
-        {users.length === 0 ? (
-          <div className="flex justify-center">
+        {loading ? (
+          <div className="flex justify-center w-full">
             <BarLoader />
+          </div>
+        ) : users.length === 0 ? (
+          <div className="text-gray-400 text-center py-8 w-full">
+            Ingen brugere fundet
           </div>
         ) : (
           [...sortedUsers].map((user: User) => (
@@ -126,6 +175,7 @@ const JobList = () => {
           ))
         )}
       </div>
+
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <DeleteUserModal
           isOpen={isOpen}

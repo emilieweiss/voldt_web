@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { getUserProfiles } from '../api/user';
+import { useEffect, useState, useCallback } from 'react';
+import { getUserProfiles, supabase } from '../api/user';
 import SolvedJobCard from '../components/approve-user-job-components/SolvedUserJobCard';
 import ApproveUserJobModal from '../modals/ApproveUserJobModal';
 import { approveJob, getSolvedJobs, markJobAsUnsolved } from '../api/user_job';
@@ -15,54 +15,79 @@ const ApproveJob = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState<UserJob>();
 
-  const refreshJobs = async () => {
+  const initialLoad = useCallback(async () => {
     setLoading(true);
     try {
-      const jobs = await getSolvedJobs();
+      const [jobs, users] = await Promise.all([
+        getSolvedJobs(),
+        getUserProfiles(),
+      ]);
       setSolvedJobs(jobs || []);
+      setUsers(users || []);
+    } catch (err) {
+      setSolvedJobs([]);
+      setUsers([]);
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
-      try {
-        const [jobs, users] = await Promise.all([
-          getSolvedJobs(),
-          getUserProfiles(),
-        ]);
-        setSolvedJobs(jobs || []);
-        setUsers(users || []);
-      } catch (err) {
-        setSolvedJobs([]);
-        setUsers([]);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
   }, []);
 
-  // Handler to open modal
+  const updateData = useCallback(async () => {
+    try {
+      const [jobs, users] = await Promise.all([
+        getSolvedJobs(),
+        getUserProfiles(),
+      ]);
+      setSolvedJobs(jobs || []);
+      setUsers(users || []);
+    } catch (err) {
+      console.error('Error updating data:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    initialLoad();
+
+    const channel = supabase
+      .channel('user_jobs_changes_approve')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'user_jobs' },
+        (payload) => {
+          console.log('Realtime event (user_jobs):', payload);
+          updateData();
+        },
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'profiles' },
+        (payload) => {
+          console.log('Realtime event (profiles):', payload);
+          updateData();
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [initialLoad, updateData]);
+
   const handleOpenApproveModal = (job: UserJob) => {
     setSelectedJob(job);
     setModalOpen(true);
   };
 
-  // Handler to close modal
   const handleCloseApproveModal = () => {
     setModalOpen(false);
     setSelectedJob(undefined);
   };
 
-  // Create a lookup map for user id to name
   const userMap = Object.fromEntries(users.map((u: User) => [u.id, u.name]));
 
   return (
     <div className="flex flex-col">
-      <h1 className="mb-4 ">Godkend færdige jobs</h1>
+      <h1 className="mb-4">Godkend færdige jobs</h1>
       {loading ? (
         <div className="flex justify-center">
           <BarLoader />
@@ -71,14 +96,16 @@ const ApproveJob = () => {
         <div>Ingen jobs fundet.</div>
       ) : (
         <ul className="space-y-4">
-          {solvedJobs.map((job) => (
-            <SolvedJobCard
-              key={job.id}
-              job={job}
-              userName={userMap[job.user_id]}
-              onApproveClick={() => handleOpenApproveModal(job)}
-            />
-          ))}
+          {[...solvedJobs]
+            .sort((a, b) => a.delivery.localeCompare(b.delivery))
+            .map((job) => (
+              <SolvedJobCard
+                key={job.id}
+                job={job}
+                userName={userMap[job.user_id]}
+                onApproveClick={() => handleOpenApproveModal(job)}
+              />
+            ))}
         </ul>
       )}
       <ApproveUserJobModal
@@ -99,12 +126,11 @@ const ApproveJob = () => {
                 `Job godkendt med rating: "${rating}". Udbetaling: ${amount} kr.`,
               );
             }
-            await refreshJobs();
+            await updateData();
           }
           handleCloseApproveModal();
         }}
         imageSolvedUrl={selectedJob?.image_solved_url}
-        loading={loading}
         money={selectedJob?.money ?? 0}
       />
     </div>
