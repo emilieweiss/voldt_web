@@ -39,30 +39,32 @@ export default function CustomSearchableSelect({ options, placeholder, onChange 
         type="button"
         onClick={() => setOpen((prev) => !prev)}
         className={`
-        bg-(--input-bg)
-        border
-        border-(--border)
-        rounded-[10px]
-        px-3
-        pr-8
-        py-2
-        text-sm
-        outline-none
-        h-10
-        appearance-none
-        w-full
-        cursor-pointer
-        flex items-center justify-between
-      `}
+          bg-(--input-bg)
+          border
+          border-(--border)
+          rounded-[10px]
+          px-3
+          pr-10
+          py-2
+          text-sm
+          outline-none
+          h-10
+          appearance-none
+          w-full
+          cursor-pointer
+          flex items-center justify-between
+          text-left
+          relative
+        `}
       >
         <span className="truncate text-left">{selected ? selected.label : placeholder || 'Vælg...'}</span>
-        <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-(--color-text-grey)">
-          <ChevronDown />
+        <span className={`absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-(--color-text-grey) transition-transform duration-200 ${open ? 'rotate-180' : ''}`}>
+          <ChevronDown className="w-4 h-4" />
         </span>
       </button>
 
       {open && (
-        <div className="absolute z-10 mt-1 w-full rounded-[10px] border border-(--border) bg-(--input-bg) text-black">
+        <div className="absolute z-10 mt-1 w-full rounded-[10px] border border-(--border) bg-(--input-bg) text-black ">
           <input
             type="text"
             value={search}
@@ -82,7 +84,7 @@ export default function CustomSearchableSelect({ options, placeholder, onChange 
                     setOpen(false);
                     setSearch('');
                   }}
-                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-200"
+                  className="cursor-pointer px-3 py-2 text-sm hover:bg-gray-100 first:rounded-t-[10px] last:rounded-b-[10px]"
                 >
                   {opt.label}
                 </li>
