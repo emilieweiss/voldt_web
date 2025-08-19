@@ -85,7 +85,6 @@ const Home = () => {
                 <tr className="bg-gray-100">
                   <th className="py-2 px-4 text-left">Navn</th>
                   <th className="py-2 px-4 text-left">Færdige jobs</th>
-                  <th className="py-2 px-4 text-left">Total tjent (kr.)</th>
                   <th className="py-2 px-4 text-left">Nuværende saldo (kr.)</th>
                 </tr>
               </thead>
@@ -107,11 +106,8 @@ const Home = () => {
                     <tr key={user.name} className={rowClass}>
                       <td className="py-2 px-4">{user.name}</td>
                       <td className="py-2 px-4">{user.jobs}</td>
-                      <td className="py-2 px-4">{user.totalEarned}</td>
-                      <td className="py-2 px-4 font-semibold">
-                        <span className={user.currentBalance >= 0 ? 'text-green-600' : 'text-red-600'}>
-                          {user.currentBalance}
-                        </span>
+                      <td className="py-2 px-4">
+                        {user.currentBalance}
                       </td>
                     </tr>
                   );
