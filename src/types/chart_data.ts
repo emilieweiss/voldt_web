@@ -7,12 +7,15 @@ export interface BarData {
   name: string;
   jobs: number;
   money: number;
+  punishments: number;
+  netEarnings: number;
 }
 
 export interface TableData {
   name: string;
   jobs: number;
-  money: number;
+  totalEarned: number;
+  currentBalance: number;
 }
 
 export interface LineChartData {

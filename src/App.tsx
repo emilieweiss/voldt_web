@@ -11,6 +11,8 @@ import RequireAuth from './context/RequireAuth';
 import { Toaster } from 'sonner';
 import ApproveUserJob from './pages/ApproveUserJob';
 import EditJobListDefault from './pages/EditJobListDefault';
+import Punishment from './pages/Punishment';
+import Statistics from './pages/Statistics';
 
 function App() {
   const location = useLocation();
@@ -76,6 +78,22 @@ function App() {
             element={
               <RequireAuth>
                 <ApproveUserJob />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/statistics"
+            element={
+              <RequireAuth>
+                <Statistics />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/punishment"
+            element={
+              <RequireAuth>
+                <Punishment />
               </RequireAuth>
             }
           />
