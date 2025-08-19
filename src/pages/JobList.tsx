@@ -6,7 +6,6 @@ import UserJobList from '../components/job-list-components/UserJobList';
 import { BarLoader } from 'react-spinners';
 import { User } from '../types/user';
 import { UserJob } from '../types/user_job';
-import Label from '../components/ui/Label';
 import Select from '../components/ui/Select';
 import Button from '../components/ui/Button';
 import { Pencil } from 'lucide-react';

@@ -24,35 +24,47 @@ export default function DeleteUserModal({
 }: DeleteUserModalProps) {
   const [selectedUserId, setSelectedUserId] = useState<string>('');
 
+  const userOptions = users.map(user => ({
+    value: user.id,
+    label: user.name,
+  }));
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="flex flex-col gap-6">
-        <h2>Slet bruger</h2>
-        <Label>
-          Vælg bruger:
+      <div className="flex flex-col gap-6 h-[50vh] min-h-96">
+        <h2 className="text-xl font-bold">Slet bruger</h2>
+
+        <div className="flex-1 flex flex-col justify-start">
+          <Label>Vælg bruger:</Label>
           <Select
+            options={userOptions}
             value={selectedUserId}
-            onChange={(e) => setSelectedUserId(e.target.value)}
-          >
-            <option value="" disabled>
-              Vælg en bruger
-            </option>
-            {users.map((user) => (
-              <option key={user.id} value={user.id}>
-                {user.name}
-              </option>
-            ))}
-          </Select>
-        </Label>
+            onChange={setSelectedUserId}
+            placeholder="Vælg en bruger..."
+          />
+        </div>
+
         <div className="flex gap-4 justify-end">
           <Button
+            type="button"
+            variant="secondary"
+            onClick={onClose}
+          >
+            Annuller
+          </Button>
+          <Button
+            type="button"
+            variant="destructive"
             disabled={!selectedUserId}
             onClick={() => {
-              if (selectedUserId) onDelete(selectedUserId);
+              if (selectedUserId) {
+                onDelete(selectedUserId);
+                setSelectedUserId(''); // Reset selection
+                onClose(); // Close modal
+              }
             }}
-            className="text-xl px-4"
           >
-            Slet
+            Slet bruger
           </Button>
         </div>
       </div>

@@ -5,9 +5,10 @@ import { SendHorizonal } from 'lucide-react';
 import EditUserJobModal from '../../modals/EditUserJobModal';
 import Searchbar from '../ui/Searchbar';
 import Select from '../ui/Select';
-import Label from '../ui/Label';
 import { toast } from 'sonner';
 import Button from '../ui/Button';
+
+type SortBy = 'title-asc' | 'title-desc' | 'money-asc' | 'money-desc';
 
 export default function JobTemplatesList({
   onPickJob,
@@ -74,19 +75,20 @@ export default function JobTemplatesList({
             className="w-full md:w-1/3"
           />
           <div className="flex items-center gap-4 ml-auto">
-            <Label htmlFor="sortby" className="text-sm font-semibold">
+            <label htmlFor="sortby" className="text-sm font-semibold sm:whitespace-nowrap">
               Sortér efter:
-            </Label>
+            </label>
             <Select
-              id="sortby"
+              options={[
+                { value: 'title-asc', label: 'Titel (A-Å)' },
+                { value: 'title-desc', label: 'Titel (Å-A)' },
+                { value: 'money-asc', label: 'Økonomi (lavest først)' },
+                { value: 'money-desc', label: 'Økonomi (højest først)' },
+              ]}
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-            >
-              <option value="title-asc">Titel (A-Å)</option>
-              <option value="title-desc">Titel (Å-A)</option>
-              <option value="money-asc">Økonomi (lavest først)</option>
-              <option value="money-desc">Økonomi (højest først)</option>
-            </Select>
+              onChange={(value) => setSortBy(value as SortBy)}
+              className="w-[80px] sm:w-[185px]"
+            />
           </div>
         </div>
         <ul className="divide-y-1 divide-(--border) mt-4">
