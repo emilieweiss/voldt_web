@@ -18,9 +18,14 @@ const EditJobListDefault = () => {
   useEffect(() => {
     async function fetchUsers() {
       setLoading(true);
-      const users = await getUserProfiles();
-      setUsers(users || []);
-      setLoading(false);
+      try {
+        const users = await getUserProfiles();
+        setUsers(users || []);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      } finally {
+        setLoading(false);
+      }
     }
     fetchUsers();
   }, []);
@@ -37,7 +42,9 @@ const EditJobListDefault = () => {
           options={userOptions}
           placeholder="Vælg bruger"
           onChange={(userId) => {
-            if (userId) navigate(`/edit-job/${userId}`);
+            if (userId) {
+              navigate(`/edit-job/${userId}`);
+            }
           }}
         />
       )}

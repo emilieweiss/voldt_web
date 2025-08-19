@@ -9,7 +9,6 @@ import Modal from '../modals/Modal';
 import Select from '../components/ui/Select';
 import { toast } from 'sonner';
 import Searchbar from '../components/ui/Searchbar';
-import Label from '../components/ui/Label';
 import BarLoader from 'react-spinners/BarLoader';
 
 type SortBy = 'title-asc' | 'title-desc' | 'money-asc' | 'money-desc';
@@ -95,20 +94,20 @@ const CreateJob = () => {
 
           {/* Sort and + button on the right */}
           <div className="flex items-center gap-4 ml-auto">
-            <Label htmlFor="sortby" className="text-sm font-semibold">
+            <label htmlFor="sortby" className="text-sm font-semibold sm:whitespace-nowrap">
               Sortér efter:
-            </Label>
+            </label>
             <Select
-              id="sortby"
+              options={[
+                { value: 'title-asc', label: 'Titel (A-Å)' },
+                { value: 'title-desc', label: 'Titel (Å-A)' },
+                { value: 'money-asc', label: 'Økonomi (lavest først)' },
+                { value: 'money-desc', label: 'Økonomi (højest først)' },
+              ]}
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as SortBy)}
-              className="min-w-30"
-            >
-              <option value="title-asc">Titel (A-Å)</option>
-              <option value="title-desc">Titel (Å-A)</option>
-              <option value="money-asc">Økonomi (lavest først)</option>
-              <option value="money-desc">Økonomi (højest først)</option>
-            </Select>
+              onChange={(value) => setSortBy(value as SortBy)}
+              className="w-[80px] sm:w-[185px]"
+            />
             <Button
               onClick={() => setIsOpen(true)}
               className="w-10 h-10 lg:w-14 lg:h-14 rounded-xl flex items-center justify-center p-0 flex-shrink-0"
