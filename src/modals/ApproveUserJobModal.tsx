@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Modal from './Modal';
 import Button from '../components/ui/Button';
 import { BarLoader } from 'react-spinners';
@@ -9,41 +9,66 @@ export default function ApproveUserJobModal({
   onApprove,
   imageSolvedUrl,
   money,
-  loading,
 }: {
   isOpen: boolean;
   onClose: () => void;
   onApprove: (rating: 'godt' | 'fint' | 'skidt' | 'fejlet') => void;
   imageSolvedUrl?: string | null;
   money: number;
-  loading: boolean;
 }) {
   const [rating, setRating] = useState<
     'godt' | 'fint' | 'skidt' | 'fejlet' | null
   >('godt');
+  const [imageLoading, setImageLoading] = useState(true);
+
   const payouts = {
     godt: money,
     fint: Math.round(money * 0.667),
     skidt: Math.round(money * 0.33),
     fejlet: 0,
   };
+
+  const handleImageLoad = () => {
+    setImageLoading(false);
+  };
+
+  const handleImageError = () => {
+    setImageLoading(false);
+  };
+
+  useEffect(() => {
+    if (isOpen && imageSolvedUrl) {
+      setImageLoading(true);
+    }
+  }, [isOpen, imageSolvedUrl]);
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="flex flex-col gap-6">
         <h2 className="text-xl font-bold">Godkend løsning</h2>
-        {loading ? (
-          <div className="flex justify-center">
-            <BarLoader />
-          </div>
-        ) : imageSolvedUrl ? (
-          <img
-            src={imageSolvedUrl}
-            alt="Løsning"
-            className="rounded-lg max-h-64 object-contain mx-auto"
-          />
-        ) : (
-          <p className="text-red-500 text-center">Fejl i hentning af billede</p>
-        )}
+
+        {/* Image section with loading state */}
+        <div className="relative">
+          {imageSolvedUrl ? (
+            <>
+              {imageLoading && (
+                <div className="flex justify-center py-8">
+                  <BarLoader />
+                </div>
+              )}
+              <img
+                src={imageSolvedUrl}
+                alt="Løsning"
+                className={`rounded-lg max-h-64 object-contain mx-auto ${imageLoading ? 'hidden' : 'block'
+                  }`}
+                onLoad={handleImageLoad}
+                onError={handleImageError}
+              />
+            </>
+          ) : (
+            <p className="text-red-500 text-center">Fejl i hentning af billede</p>
+          )}
+        </div>
 
         <div className="flex flex-col items-center">
           <div className="font-semibold mb-4">Vurdér løsning:</div>
