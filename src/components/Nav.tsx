@@ -4,6 +4,23 @@ import { useAuth } from '../context/Auth';
 import { Menu } from 'lucide-react';
 import { useState } from 'react';
 
+type NavItem = {
+  path: string;
+  label: string;
+  requiresAuth: boolean;
+};
+
+const navItems: NavItem[] = [
+  { path: '/', label: 'Hjem', requiresAuth: true },
+  { path: '/create-job', label: 'Opret job', requiresAuth: true },
+  { path: '/job-list', label: 'Jobliste', requiresAuth: true },
+  { path: '/edit-job/', label: 'Rediger jobliste', requiresAuth: true },
+  { path: '/approve', label: 'Godkend job', requiresAuth: true },
+  { path: '/statistics', label: 'Statistik', requiresAuth: true },
+  { path: '/punishment', label: 'Straf', requiresAuth: true },
+  { path: '/login', label: 'Login', requiresAuth: false },
+];
+
 function Navbar() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -17,122 +34,69 @@ function Navbar() {
     return `font-semibold ${pathname.startsWith(path) ? 'text-[color:var(--color-wolt-blue)]' : 'text-black'}`;
   };
 
+  const filteredNavItems = navItems.filter(item =>
+    isLoggedIn ? item.requiresAuth : !item.requiresAuth
+  );
+
+  const renderNavItems = (isMobile = false) => (
+    <>
+      {filteredNavItems.map(item => (
+        <Link
+          key={item.path}
+          to={item.path}
+          className={linkClass(item.path)}
+          onClick={isMobile ? () => setMenuOpen(false) : undefined}
+        >
+          {item.label}
+        </Link>
+      ))}
+
+      {isLoggedIn ? (
+        <Button
+          className="w-25"
+          onClick={() => {
+            if (isMobile) setMenuOpen(false);
+            logout();
+          }}
+        >
+          Log ud
+        </Button>
+      ) : (
+        <Button
+          onClick={() => {
+            if (isMobile) setMenuOpen(false);
+            navigate('/signup');
+          }}
+        >
+          Opret profil
+        </Button>
+      )}
+    </>
+  );
+
   return (
     <nav className="flex items-center justify-between px-6 py-4 border-b border-gray-100 lg:px-30 relative">
       <div className="text-4xl font-bold text-(--color-wolt-blue)">voldt</div>
+
       {/* Burger menu button - only visible on lg and smaller */}
       <button
-        className="md:hidden flex items-center justify-center"
+        className="lg:hidden flex items-center justify-center"
         onClick={() => setMenuOpen((open) => !open)}
         aria-label="Åben menu"
         type="button"
       >
         <Menu className="w-8 h-8 text-(--color-wolt-blue)" />
       </button>
+
       {/* Desktop menu - only visible on lg and up */}
-      {isLoggedIn ? (
-        <>
-          <div className="hidden md:flex items-center space-x-8 text-sm">
-            <Link to="/" className={linkClass('/')}>
-              Hjem
-            </Link>
-            <Link to="/create-job" className={linkClass('/create-job')}>
-              Opret job
-            </Link>
-            <Link to="/job-list" className={linkClass('/job-list')}>
-              Jobliste
-            </Link>
-            <Link to={`/edit-job/`} className={linkClass('/edit-job/')}>
-              Rediger jobliste
-            </Link>
-            <Link to={`/approve`} className={linkClass('/approve')}>
-              Godkend job
-            </Link>
-            <Button className="w-25" onClick={logout}>
-              Log ud
-            </Button>
-          </div>
-        </>
-      ) : (
-        <div className="hidden md:flex items-center space-x-4 ml-auto">
-          <Link to="/login" className="text-sm font-semibold">
-            Login
-          </Link>
-          <Button className="" onClick={() => navigate('/signup')}>
-            Opret profil
-          </Button>
-        </div>
-      )}
+      <div className="hidden lg:flex items-center space-x-8 text-sm">
+        {renderNavItems()}
+      </div>
+
       {/* Mobile menu - only visible on lg and smaller, when open */}
       {menuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-white flex flex-col items-center space-y-4 py-4 border-b-1 border-(--border) z-50">
-          {isLoggedIn ? (
-            <>
-              <Link
-                to="/"
-                className={linkClass('/')}
-                onClick={() => setMenuOpen(false)}
-              >
-                Hjem
-              </Link>
-              <Link
-                to="/create-job"
-                className={linkClass('/create-job')}
-                onClick={() => setMenuOpen(false)}
-              >
-                Opret job
-              </Link>
-              <Link
-                to="/job-list"
-                className={linkClass('/job-list')}
-                onClick={() => setMenuOpen(false)}
-              >
-                Jobliste
-              </Link>
-              <Link
-                to={`/edit-job/`}
-                className={linkClass('/edit-job/')}
-                onClick={() => setMenuOpen(false)}
-              >
-                Rediger jobliste
-              </Link>
-              <Link
-                to={`/approve`}
-                className={linkClass('/approve')}
-                onClick={() => setMenuOpen(false)}
-              >
-                Godkend job
-              </Link>
-              <Button
-                className="w-25"
-                onClick={() => {
-                  setMenuOpen(false);
-                  logout();
-                }}
-              >
-                Log ud
-              </Button>
-            </>
-          ) : (
-            <>
-              <Link
-                to="/login"
-                className="text-sm font-semibold"
-                onClick={() => setMenuOpen(false)}
-              >
-                Login
-              </Link>
-              <Button
-                className=""
-                onClick={() => {
-                  setMenuOpen(false);
-                  navigate('/signup');
-                }}
-              >
-                Opret profil
-              </Button>
-            </>
-          )}
+        <div className="lg:hidden absolute top-full left-0 w-full bg-white flex flex-col items-center space-y-4 py-4 border-b-1 border-(--border) z-50">
+          {renderNavItems(true)}
         </div>
       )}
     </nav>
