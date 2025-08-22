@@ -73,8 +73,9 @@ const ApproveJob = () => {
     <div className="flex flex-col">
       <h1 className="mb-4">Godkend færdige jobs</h1>
       {loading ? (
-        <div className="flex justify-center">
-          <BarLoader />
+        <div className="flex flex-col items-center justify-center min-h-[400px]">
+          <BarLoader color="#009DF4" />
+          <p className="mt-4 text-gray-600">Indlæser færdige jobs...</p>
         </div>
       ) : solvedJobs.length === 0 ? (
         <div>Ingen jobs fundet.</div>

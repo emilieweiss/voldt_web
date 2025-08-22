@@ -34,8 +34,9 @@ const EditJobListDefault = () => {
     <div className="">
       <h1 className="mb-6">Vælg bruger for at redigere jobliste</h1>
       {loading ? (
-        <div className="flex justify-center">
-          <BarLoader />
+        <div className="flex flex-col items-center justify-center min-h-[400px]">
+          <BarLoader color="#009DF4" />
+          <p className="mt-4 text-gray-600">Indlæser brugere...</p>
         </div>
       ) : (
         <CustomSearchableSelect

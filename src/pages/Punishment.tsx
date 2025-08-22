@@ -77,8 +77,9 @@ const Punishment = () => {
       </div>
 
       {loading ? (
-        <div className="flex justify-center">
-          <BarLoader />
+        <div className="flex flex-col items-center justify-center min-h-[400px]">
+          <BarLoader color="#009DF4" />
+          <p className="mt-4 text-gray-600">Indlæser straffe...</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

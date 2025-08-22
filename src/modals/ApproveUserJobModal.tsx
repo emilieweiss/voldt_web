@@ -55,8 +55,9 @@ export default function ApproveUserJobModal({
             {imageSolvedUrl ? (
               <>
                 {imageLoading && (
-                  <div className="flex justify-center py-8">
-                    <BarLoader />
+                  <div className="flex flex-col items-center justify-center min-h-[400px]">
+                    <BarLoader color="#009DF4" />
+                    <p className="mt-4 text-gray-600">Indlæser billede...</p>
                   </div>
                 )}
                 <img

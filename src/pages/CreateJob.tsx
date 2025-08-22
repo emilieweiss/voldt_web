@@ -122,8 +122,9 @@ const CreateJob = () => {
           </div>
         </div>
         {loading && (
-          <div className="flex justify-center">
-            <BarLoader />
+          <div className="flex flex-col items-center justify-center w-full min-h-[275px]">
+            <BarLoader color="#009DF4" />
+            <p className="mt-4 text-gray-600">Indlæser oprettede opgaver...</p>
           </div>
         )}
         {error && <div className="text-red-500">{error}</div>}

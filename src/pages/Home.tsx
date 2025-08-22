@@ -55,8 +55,9 @@ const Home = () => {
       <h1 className="">Hjem</h1>
 
       {loading ? (
-        <div className="flex justify-center">
-          <BarLoader />
+        <div className="mt-6 flex flex-col items-center justify-center w-full min-h-[400px]">
+          <BarLoader color="#009DF4" />
+          <p className="mt-4 text-gray-600">Indlæser jobliste...</p>
         </div>
       ) : (
         <>

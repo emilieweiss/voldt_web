@@ -132,8 +132,9 @@ const JobList = () => {
 
       <div className="flex gap-4 flex-wrap justify-center md:justify-start">
         {loading ? (
-          <div className="flex justify-center w-full">
-            <BarLoader />
+          <div className="flex flex-col items-center justify-center w-full min-h-[275px]">
+            <BarLoader color="#009DF4" />
+            <p className="mt-4 text-gray-600">Indlæser jobliste...</p>
           </div>
         ) : users.length === 0 ? (
           <div className="text-gray-400 text-center py-8 w-full">
