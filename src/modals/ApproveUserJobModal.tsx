@@ -104,7 +104,9 @@ export default function ApproveUserJobModal({
               variant="default"
               disabled={!rating}
               onClick={() => {
-                if (rating) onApprove(rating);
+                if (rating) {
+                  onApprove(rating);
+                }
               }}
             >
               Bekræft godkendelse

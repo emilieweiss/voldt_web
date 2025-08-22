@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import { getApprovedJobs } from '../api/user_job';
-import { getUserProfiles, supabase } from '../api/user';
+import { getUserProfiles } from '../api/user';
+import { useRealtime } from '../context/RealtimeContext';
 import { TableData } from '../types/chart_data';
 import BarLoader from 'react-spinners/BarLoader';
 
 const Home = () => {
   const [tableData, setTableData] = useState<TableData[]>([]);
   const [loading, setLoading] = useState(true);
+  const { subscribeTo } = useRealtime();
 
   const loadData = useCallback(async () => {
     try {
@@ -43,30 +45,10 @@ const Home = () => {
   useEffect(() => {
     loadData();
 
-    const channel = supabase
-      .channel('home_user_overview')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'user_jobs' },
-        (payload) => {
-          console.log('Realtime event (home):', payload);
-          loadData();
-        },
-      )
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'profiles' },
-        (payload) => {
-          console.log('Realtime event (profiles - home):', payload);
-          loadData();
-        },
-      )
-      .subscribe();
+    const unsubscribe = subscribeTo(['user_jobs', 'profiles'], loadData);
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [loadData]);
+    return unsubscribe;
+  }, [loadData, subscribeTo]);
 
   return (
     <div className="">
@@ -91,24 +73,22 @@ const Home = () => {
               <tbody>
                 {tableData.map((user, index) => {
                   const totalUsers = tableData.length;
-                  const bottomThirdStart = Math.ceil(totalUsers * 2 / 3);
+                  const bottomThirdStart = Math.ceil((totalUsers * 2) / 3);
                   const isFirstPlace = index === 0;
                   const isBottomThird = index >= bottomThirdStart;
 
-                  let rowClass = "border-t";
+                  let rowClass = 'border-t';
                   if (isFirstPlace) {
-                    rowClass += " bg-green-100 border-b";
+                    rowClass += ' bg-green-100 border-b';
                   } else if (isBottomThird) {
-                    rowClass += " bg-red-100";
+                    rowClass += ' bg-red-100';
                   }
 
                   return (
                     <tr key={user.name} className={rowClass}>
                       <td className="py-2 px-4">{user.name}</td>
                       <td className="py-2 px-4">{user.jobs}</td>
-                      <td className="py-2 px-4">
-                        {user.currentBalance}
-                      </td>
+                      <td className="py-2 px-4">{user.currentBalance}</td>
                     </tr>
                   );
                 })}

@@ -35,7 +35,10 @@ const SignUp = () => {
       <h3 className="text-center mb-4 md:w-[340px]">
         Velkommen til! Indtast dine oplysninger for at oprette en ny bruger.
       </h3>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 md:w-sm w-full">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-4 md:w-sm w-full"
+      >
         <div>
           <Label className="block mb-1">Navn</Label>
           <Input
@@ -44,7 +47,9 @@ const SignUp = () => {
             required
             className="w-full"
           />
-          {errors.name && <div className="text-red-500 text-sm">{errors.name.message}</div>}
+          {errors.name && (
+            <div className="text-red-500 text-sm">{errors.name.message}</div>
+          )}
         </div>
         <div>
           <Label className="block mb-1">Email</Label>
@@ -54,7 +59,9 @@ const SignUp = () => {
             required
             className="w-full"
           />
-          {errors.email && <div className="text-red-500 text-sm">{errors.email.message}</div>}
+          {errors.email && (
+            <div className="text-red-500 text-sm">{errors.email.message}</div>
+          )}
         </div>
         <div>
           <Label className="block mb-1">Kodeord</Label>
@@ -64,7 +71,11 @@ const SignUp = () => {
             required
             className="w-full"
           />
-          {errors.password && <div className="text-red-500 text-sm">{errors.password.message}</div>}
+          {errors.password && (
+            <div className="text-red-500 text-sm">
+              {errors.password.message}
+            </div>
+          )}
         </div>
         <div>
           <Label className="block mb-1">Hemmelig kode</Label>
@@ -75,9 +86,15 @@ const SignUp = () => {
             className="w-full"
             placeholder="Indtast hemmelig kode"
           />
-          {errors.secret && <div className="text-red-500 text-sm">{errors.secret.message}</div>}
+          {errors.secret && (
+            <div className="text-red-500 text-sm">{errors.secret.message}</div>
+          )}
         </div>
-        <Button type="submit" className="w-full mt-2 text-xl" disabled={isSubmitting}>
+        <Button
+          type="submit"
+          className="w-full mt-2 text-xl"
+          disabled={isSubmitting}
+        >
           Opret profil
         </Button>
 

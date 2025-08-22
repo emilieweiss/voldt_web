@@ -1,7 +1,8 @@
 import { useParams } from 'react-router';
 import { useEffect, useState, useCallback } from 'react';
-import { getUserProfiles, supabase } from '../api/user';
+import { getUserProfiles } from '../api/user';
 import { getUserJobs, assignJobToUser } from '../api/user_job';
+import { useRealtime } from '../context/RealtimeContext';
 import JobTemplatesList from '../components/job-list-components/JobTemplatesList';
 import { Job } from '../types/job';
 import { BarLoader } from 'react-spinners';
@@ -15,6 +16,7 @@ const EditJobList = () => {
   const [user, setUser] = useState<User>();
   const [jobs, setJobs] = useState<UserJob[]>([]);
   const [loading, setLoading] = useState(true);
+  const { subscribeTo } = useRealtime();
 
   const initialLoad = useCallback(async () => {
     setLoading(true);
@@ -50,33 +52,13 @@ const EditJobList = () => {
 
     initialLoad();
 
-    const channel = supabase
-      .channel('edit_job_list_changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'user_jobs' },
-        (payload) => {
-          console.log('Realtime event (user_jobs):', payload);
-          updateData();
-        },
-      )
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'profiles' },
-        (payload) => {
-          console.log('Realtime event (profiles):', payload);
-          updateData();
-        },
-      )
-      .subscribe();
+    const unsubscribe = subscribeTo(['user_jobs', 'profiles'], updateData);
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [id, initialLoad, updateData]);
+    return unsubscribe;
+  }, [id, initialLoad, updateData, subscribeTo]);
 
   const handleJobRemoved = (jobId: string) => {
-    setJobs(prevJobs => prevJobs.filter(job => job.id !== jobId));
+    setJobs((prevJobs) => prevJobs.filter((job) => job.id !== jobId));
   };
 
   const handleAssignJob = async (jobToAssign: Job) => {
@@ -126,8 +108,8 @@ const EditJobList = () => {
             <UserJobListEdit
               profileName={user.name}
               jobs={jobs}
-              onEdit={() => { }}
-              widthClass='w-full'
+              onEdit={() => {}}
+              widthClass="w-full"
               onJobRemoved={handleJobRemoved}
             />
           </div>

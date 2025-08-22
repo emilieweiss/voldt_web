@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import PunishmentHistory from '../components/punishment-components/PunishmentHistory';
 import CurrentBalances from '../components/punishment-components/CurrentBalances';
 import GivePunishment from '../components/punishment-components/GivePunishment';
+import { useRealtime } from '../context/RealtimeContext';
 
 const Punishment = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -16,19 +17,15 @@ const Punishment = () => {
   >([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const { subscribeTo } = useRealtime();
 
   const initialLoad = useCallback(async () => {
     setLoading(true);
     try {
-      console.log('Loading data...');
-
       const [profiles, punishmentsData] = await Promise.all([
         getUserProfiles(),
         getPunishments(),
       ]);
-
-      console.log('Profiles:', profiles);
-      console.log('Punishments:', punishmentsData);
 
       setUsers(profiles || []);
       setPunishments(punishmentsData || []);
@@ -43,15 +40,11 @@ const Punishment = () => {
   const updateData = useCallback(async () => {
     try {
       setUpdating(true);
-      console.log('Updating data...');
 
       const [profiles, punishmentsData] = await Promise.all([
         getUserProfiles(),
         getPunishments(),
       ]);
-
-      console.log('Updated Profiles:', profiles);
-      console.log('Updated Punishments:', punishmentsData);
 
       setUsers(profiles || []);
       setPunishments(punishmentsData || []);
@@ -66,41 +59,10 @@ const Punishment = () => {
   useEffect(() => {
     initialLoad();
 
-    const channel = supabase
-      .channel('punishment_page_realtime')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'punishment',
-        },
-        (payload) => {
-          console.log('Realtime event (punishment):', payload);
-          updateData();
-        },
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'profiles',
-        },
-        (payload) => {
-          console.log('Realtime event (profiles general):', payload);
-          updateData();
-        },
-      )
-      .subscribe((status) => {
-        console.log('Subscription status:', status);
-      });
+    const unsubscribe = subscribeTo(['punishment', 'profiles'], updateData);
 
-    return () => {
-      console.log('Cleaning up subscriptions');
-      supabase.removeChannel(channel);
-    };
-  }, [initialLoad, updateData]);
+    return unsubscribe;
+  }, [initialLoad, updateData, subscribeTo]);
 
   return (
     <div className="">

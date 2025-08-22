@@ -61,6 +61,7 @@ const CreateJob = () => {
     }
   };
 
+  // No real-time subscription needed for job templates
   useEffect(() => {
     fetchJobs();
   }, []);
@@ -94,7 +95,10 @@ const CreateJob = () => {
 
           {/* Sort and + button on the right */}
           <div className="flex items-center gap-4 ml-auto">
-            <label htmlFor="sortby" className="text-sm font-semibold sm:whitespace-nowrap">
+            <label
+              htmlFor="sortby"
+              className="text-sm font-semibold sm:whitespace-nowrap"
+            >
               Sortér efter:
             </label>
             <Select
@@ -117,9 +121,11 @@ const CreateJob = () => {
             </Button>
           </div>
         </div>
-        {loading && <div className="flex justify-center">
-          <BarLoader />
-        </div>}
+        {loading && (
+          <div className="flex justify-center">
+            <BarLoader />
+          </div>
+        )}
         {error && <div className="text-red-500">{error}</div>}
         {!loading &&
           !error &&

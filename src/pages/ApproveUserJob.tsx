@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
-import { getUserProfiles, supabase } from '../api/user';
+import { getUserProfiles } from '../api/user';
+import { useRealtime } from '../context/RealtimeContext';
 import SolvedJobCard from '../components/approve-user-job-components/SolvedUserJobCard';
 import ApproveUserJobModal from '../modals/ApproveUserJobModal';
 import { approveJob, getSolvedJobs, markJobAsUnsolved } from '../api/user_job';
@@ -14,6 +15,8 @@ const ApproveJob = () => {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState<UserJob>();
+
+  const { subscribeTo } = useRealtime();
 
   const initialLoad = useCallback(async () => {
     setLoading(true);
@@ -48,30 +51,10 @@ const ApproveJob = () => {
   useEffect(() => {
     initialLoad();
 
-    const channel = supabase
-      .channel('user_jobs_changes_approve')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'user_jobs' },
-        (payload) => {
-          console.log('Realtime event (user_jobs):', payload);
-          updateData();
-        },
-      )
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'profiles' },
-        (payload) => {
-          console.log('Realtime event (profiles):', payload);
-          updateData();
-        },
-      )
-      .subscribe();
+    const unsubscribe = subscribeTo(['user_jobs', 'profiles'], updateData);
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [initialLoad, updateData]);
+    return unsubscribe;
+  }, [initialLoad, updateData, subscribeTo]);
 
   const handleOpenApproveModal = (job: UserJob) => {
     setSelectedJob(job);
@@ -80,7 +63,8 @@ const ApproveJob = () => {
 
   const handleCloseApproveModal = () => {
     setModalOpen(false);
-    setSelectedJob(undefined);
+    // Don't clear selectedJob immediately to avoid console spam
+    setTimeout(() => setSelectedJob(undefined), 100);
   };
 
   const userMap = Object.fromEntries(users.map((u: User) => [u.id, u.name]));
@@ -115,16 +99,24 @@ const ApproveJob = () => {
           if (selectedJob?.id) {
             if (rating === 'fejlet') {
               await markJobAsUnsolved(selectedJob.id);
+              toast.success('Job markeret som fejlet og sendt tilbage.');
             } else {
               let amount = selectedJob.money;
-              if (rating === 'fint')
+              if (rating === 'fint') {
                 amount = Math.round(selectedJob.money * 0.667);
-              if (rating === 'skidt')
+              } else if (rating === 'skidt') {
                 amount = Math.round(selectedJob.money * 0.33);
-              await approveJob(selectedJob.id, amount);
-              toast.success(
-                `Job godkendt med rating: "${rating}". Udbetaling: ${amount} kr.`,
-              );
+              }
+
+              try {
+                await approveJob(selectedJob.id, amount);
+
+                toast.success(
+                  `Job godkendt med rating: "${rating}". Udbetaling: ${amount} kr. (Original: ${selectedJob.money} kr.)`,
+                );
+              } catch (error) {
+                toast.error('Fejl ved godkendelse af job');
+              }
             }
             await updateData();
           }
