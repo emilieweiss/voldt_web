@@ -7,6 +7,7 @@ import Searchbar from '../ui/Searchbar';
 import Select from '../ui/Select';
 import { toast } from 'sonner';
 import Button from '../ui/Button';
+import { Clock, DollarSign } from 'lucide-react';
 
 type SortBy = 'title-asc' | 'title-desc' | 'money-asc' | 'money-desc';
 
@@ -75,7 +76,10 @@ export default function JobTemplatesList({
             className="w-full md:w-1/3"
           />
           <div className="flex items-center gap-4 ml-auto">
-            <label htmlFor="sortby" className="text-sm font-semibold sm:whitespace-nowrap">
+            <label
+              htmlFor="sortby"
+              className="text-sm font-semibold sm:whitespace-nowrap"
+            >
               Sortér efter:
             </label>
             <Select
@@ -96,12 +100,22 @@ export default function JobTemplatesList({
             <li key={job.id} className="flex items-center justify-between py-4">
               <div className="w-full grid grid-row-2 items-center">
                 <div className="font-semibold truncate">{job.title}</div>
-                <div className="text-gray-600 text-sm break-words whitespace-pre-line line-clamp-3 max-h-24">
+                <div className="flex items-center justify-between max-w-90 lg:max-w-45 my-1 text-sm text-gray-500 whitespace-nowrap">
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="w-5 h-5 text-gray-500" />
+                    <span className="font-semibold">{job.money} kr.</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-5 h-5 text-gray-500" />
+                    <span className="font-semibold">{job.duration} min</span>
+                  </div>
+                </div>
+                <div className="text-gray-700 text-sm break-words whitespace-pre-line line-clamp-3 max-h-24">
                   {job.description}
                 </div>
               </div>
               <Button
-                variant='round'
+                variant="round"
                 className="ml-4"
                 onClick={() => {
                   setSelectedJob(job);
