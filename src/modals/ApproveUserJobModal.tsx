@@ -59,7 +59,7 @@ export default function ApproveUserJobModal({
               <img
                 src={imageSolvedUrl}
                 alt="Løsning"
-                className={`rounded-lg max-w-[55vw] object-contain mx-auto ${
+                className={`rounded-lg max-h-[56vh] object-contain mx-auto ${
                   imageLoading ? 'hidden' : 'block'
                 }`}
                 onLoad={handleImageLoad}
