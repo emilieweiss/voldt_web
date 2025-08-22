@@ -43,6 +43,7 @@ const BarChart = ({
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             type="number"
+            domain={[0, 'dataMax']}
             label={{
               value: xAxisLabel,
               position: 'insideBottom',

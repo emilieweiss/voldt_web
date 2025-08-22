@@ -20,5 +20,8 @@ export interface TableData {
 
 export interface LineChartData {
   delivery: string;
-  [userName: string]: number | string;
+  hasEvents?: boolean;
+  isHourlySlot?: boolean;
+  eventsInHour?: string[];
+  [userName: string]: string | number | boolean | string[] | undefined;
 }

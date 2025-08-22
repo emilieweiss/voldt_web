@@ -81,7 +81,7 @@ export const useStatisticsData = (): UseStatisticsDataReturn => {
 
     const userMap = Object.fromEntries(chartUsers.map((u) => [u.id, u.name]));
 
-    // Get all unique times and sort them
+    // Get all unique event times and sort them
     const deliveryTimes = jobs
       .map((job) => job.delivery?.slice(0, 5))
       .filter(Boolean) as string[];
@@ -96,16 +96,31 @@ export const useStatisticsData = (): UseStatisticsDataReturn => {
       })
       .filter(Boolean) as string[];
 
-    const allTimes = Array.from(
+    const allEventTimes = Array.from(
       new Set([...deliveryTimes, ...punishmentTimes]),
     ).sort();
 
-    // Group jobs and punishments by time
+    // Create complete X-axis timeline from first event to 00:00
+    let completeTimeline: string[] = [];
+    if (allEventTimes.length > 0) {
+      const startTime = allEventTimes[0];
+      const [startHour] = startTime.split(':').map(Number);
+
+      // Generate hourly intervals from start hour to 23:00, then add 00:00
+      for (let hour = startHour; hour < 24; hour++) {
+        const timeStr = `${String(hour).padStart(2, '0')}:00`;
+        completeTimeline.push(timeStr);
+      }
+      // Add 00:00 as the final point
+      completeTimeline.push('00:00');
+    }
+
+    // Group jobs and punishments by actual event times only
     const jobsByTime = new Map<string, UserJob[]>();
     const punishmentsByTime = new Map<string, Punishment[]>();
 
-    // Initialize maps
-    allTimes.forEach((time) => {
+    // Initialize maps with actual event times only
+    allEventTimes.forEach((time) => {
       jobsByTime.set(time, []);
       punishmentsByTime.set(time, []);
     });
@@ -129,37 +144,80 @@ export const useStatisticsData = (): UseStatisticsDataReturn => {
       }
     });
 
-    // Build line chart data
+    // Create the final timeline data - only hourly intervals for positioning
+    const lineChartData: LineChartData[] = [];
+    let cumulativeByUser: Record<string, number> = {};
+
+    // Define userIds here, before using it
     const userIds = profiles.map((u) => u.id);
-    const cumulative: Record<string, number> = {};
-    userIds.forEach((id) => (cumulative[id] = 0));
 
-    const lineChartData: LineChartData[] = allTimes.map((time) => {
-      const row: LineChartData = { delivery: time };
+    // Initialize with zeros
+    userIds.forEach((userId) => {
+      const userName = userMap[userId];
+      if (userName) {
+        cumulativeByUser[userName] = 0;
+      }
+    });
 
-      // Add jobs earnings
-      jobsByTime.get(time)?.forEach((job) => {
-        if (job.user_id) {
-          cumulative[job.user_id] += job.money || 0;
-        }
+    // Process each hourly slot
+    completeTimeline.forEach((hourSlot) => {
+      const hourSlotNum =
+        hourSlot === '00:00' ? 0 : parseInt(hourSlot.split(':')[0]);
+      let hasEventsInThisHour = false;
+
+      // Find all events that fall within this hour
+      const eventsInThisHour = allEventTimes.filter((eventTime) => {
+        const eventHour = parseInt(eventTime.split(':')[0]);
+        return (
+          eventHour === hourSlotNum || (hourSlot === '00:00' && eventHour === 0)
+        );
       });
 
-      // Subtract punishment amounts
-      punishmentsByTime.get(time)?.forEach((punishment) => {
-        if (punishment.user_id) {
-          cumulative[punishment.user_id] -= punishment.amount || 0;
-        }
+      // Sort events within this hour chronologically
+      eventsInThisHour.sort();
+
+      // Process all events within this hour
+      eventsInThisHour.forEach((eventTime) => {
+        hasEventsInThisHour = true;
+
+        // Add jobs earnings for this event
+        jobsByTime.get(eventTime)?.forEach((job) => {
+          if (job.user_id) {
+            const userName = userMap[job.user_id];
+            if (userName) {
+              cumulativeByUser[userName] += job.money || 0;
+            }
+          }
+        });
+
+        // Subtract punishment amounts for this event
+        punishmentsByTime.get(eventTime)?.forEach((punishment) => {
+          if (punishment.user_id) {
+            const userName = userMap[punishment.user_id];
+            if (userName) {
+              cumulativeByUser[userName] -= punishment.amount || 0;
+            }
+          }
+        });
       });
 
-      // Set cumulative values for each user
+      // Create the hourly data point
+      const row: LineChartData = {
+        delivery: hourSlot,
+        hasEvents: hasEventsInThisHour,
+        isHourlySlot: true,
+        eventsInHour: eventsInThisHour, // Store which events happened in this hour
+      };
+
+      // Set cumulative values for all users
       userIds.forEach((userId) => {
         const userName = userMap[userId];
         if (userName) {
-          row[userName] = cumulative[userId];
+          row[userName] = cumulativeByUser[userName] || 0;
         }
       });
 
-      return row;
+      lineChartData.push(row);
     });
 
     // Calculate bar chart data

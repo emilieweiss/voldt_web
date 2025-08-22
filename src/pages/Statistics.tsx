@@ -46,17 +46,23 @@ const Statistics = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px]">
-        <BarLoader color="#3B82F6" />
-        <p className="mt-4 text-gray-600">Indlæser statistikker...</p>
+      <div>
+        <h1 className="mb-6">Statistik</h1>
+        <div className="flex flex-col items-center justify-center min-h-[400px]">
+          <BarLoader color="#009DF4" />
+          <p className="mt-4 text-gray-600">Indlæser statistikker...</p>
+        </div>
       </div>
     );
   }
 
   if (chartUsers.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px]">
-        <p className="text-gray-600 text-lg">Ingen data tilgængelig</p>
+      <div>
+        <h1 className="mb-6">Statistik</h1>
+        <div className="flex flex-col items-center justify-center min-h-[400px]">
+          <p className="text-gray-600 text-lg">Ingen data tilgængelig</p>
+        </div>
       </div>
     );
   }
