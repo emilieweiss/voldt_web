@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from 'react-router';
 import Button from './ui/Button';
 import { useAuth } from '../context/Auth';
 import { Menu } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type NavItem = {
   path: string;
@@ -26,6 +26,23 @@ function Navbar() {
   const navigate = useNavigate();
   const { isLoggedIn, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+
+    if (menuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [menuOpen]);
 
   const linkClass = (path: string) => {
     if (path === '/') {
@@ -34,13 +51,13 @@ function Navbar() {
     return `font-semibold ${pathname.startsWith(path) ? 'text-[color:var(--color-wolt-blue)]' : 'text-black'}`;
   };
 
-  const filteredNavItems = navItems.filter(item =>
-    isLoggedIn ? item.requiresAuth : !item.requiresAuth
+  const filteredNavItems = navItems.filter((item) =>
+    isLoggedIn ? item.requiresAuth : !item.requiresAuth,
   );
 
   const renderNavItems = (isMobile = false) => (
     <>
-      {filteredNavItems.map(item => (
+      {filteredNavItems.map((item) => (
         <Link
           key={item.path}
           to={item.path}
@@ -75,8 +92,13 @@ function Navbar() {
   );
 
   return (
-    <nav className="flex items-center justify-between px-6 py-4 border-b border-gray-100 lg:px-30 relative">
-      <div className="text-4xl font-bold text-(--color-wolt-blue)">voldt</div>
+    <nav
+      className="flex items-center justify-between px-6 py-4 border-b border-gray-100 lg:px-30 relative"
+      ref={menuRef}
+    >
+      <Link to="/" className="text-4xl font-bold text-(--color-wolt-blue) ">
+        voldt
+      </Link>
 
       {/* Burger menu button - only visible on lg and smaller */}
       <button
@@ -85,7 +107,7 @@ function Navbar() {
         aria-label="Åben menu"
         type="button"
       >
-        <Menu className="w-8 h-8 text-(--color-wolt-blue)" />
+        <Menu className="w-8 h-8 text-(--color-wolt-blue) cursor-pointer" />
       </button>
 
       {/* Desktop menu - only visible on lg and up */}
