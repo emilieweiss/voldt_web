@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { getUserProfiles } from '../api/user';
-import { useRealtime } from '../context/RealtimeContext';
+import { getUserProfiles, supabase } from '../api/user';
 import SolvedJobCard from '../components/approve-user-job-components/SolvedUserJobCard';
 import ApproveUserJobModal from '../modals/ApproveUserJobModal';
 import { approveJob, getSolvedJobs, markJobAsUnsolved } from '../api/user_job';
@@ -15,8 +14,6 @@ const ApproveJob = () => {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState<UserJob>();
-
-  const { subscribeTo } = useRealtime();
 
   const initialLoad = useCallback(async () => {
     setLoading(true);
@@ -51,10 +48,24 @@ const ApproveJob = () => {
   useEffect(() => {
     initialLoad();
 
-    const unsubscribe = subscribeTo(['user_jobs', 'profiles'], updateData);
+    const channel = supabase
+      .channel('user_jobs_changes_approve')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'user_jobs' },
+        () => updateData(),
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'profiles' },
+        () => updateData(),
+      )
+      .subscribe();
 
-    return unsubscribe;
-  }, [initialLoad, updateData, subscribeTo]);
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [initialLoad, updateData]);
 
   const handleOpenApproveModal = (job: UserJob) => {
     setSelectedJob(job);

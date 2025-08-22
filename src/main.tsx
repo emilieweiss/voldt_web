@@ -1,19 +1,16 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
-import './index.css';
 import App from './App.tsx';
-import { AuthProvider } from './context/Auth.tsx';
-import { RealtimeProvider } from './context/RealtimeContext';
+import './index.css';
+import { AuthProvider } from './context/Auth';
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <RealtimeProvider>
-          <App />
-        </RealtimeProvider>
+        <App />
       </AuthProvider>
     </BrowserRouter>
-  </StrictMode>,
+  </React.StrictMode>,
 );

@@ -1,8 +1,7 @@
 import { useParams } from 'react-router';
 import { useEffect, useState, useCallback } from 'react';
-import { getUserProfiles } from '../api/user';
+import { getUserProfiles, supabase } from '../api/user';
 import { getUserJobs, assignJobToUser } from '../api/user_job';
-import { useRealtime } from '../context/RealtimeContext';
 import JobTemplatesList from '../components/job-list-components/JobTemplatesList';
 import { Job } from '../types/job';
 import { BarLoader } from 'react-spinners';
@@ -16,7 +15,6 @@ const EditJobList = () => {
   const [user, setUser] = useState<User>();
   const [jobs, setJobs] = useState<UserJob[]>([]);
   const [loading, setLoading] = useState(true);
-  const { subscribeTo } = useRealtime();
 
   const initialLoad = useCallback(async () => {
     setLoading(true);
@@ -52,10 +50,24 @@ const EditJobList = () => {
 
     initialLoad();
 
-    const unsubscribe = subscribeTo(['user_jobs', 'profiles'], updateData);
+    const channel = supabase
+      .channel('edit_job_list_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'user_jobs' },
+        () => updateData(),
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'profiles' },
+        () => updateData(),
+      )
+      .subscribe();
 
-    return unsubscribe;
-  }, [id, initialLoad, updateData, subscribeTo]);
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [id, initialLoad, updateData]);
 
   const handleJobRemoved = (jobId: string) => {
     setJobs((prevJobs) => prevJobs.filter((job) => job.id !== jobId));
@@ -81,16 +93,16 @@ const EditJobList = () => {
         solved: false,
         approved: false,
       };
+
       await assignJobToUser(userJob);
       toast.success(`Job tilføjet til bruger: ${user.name}`);
+
+      // Ensure immediate update of the job list
+      await updateData();
     } catch (err: unknown) {
       toast.error('Kunne ikke tilføje job til bruger');
       if (err instanceof Error) {
-        alert('Kunne ikke tilføje job: ' + err.message);
-        console.error(err);
-      } else {
-        alert('Kunne ikke tilføje job: Ukendt fejl');
-        console.error(err);
+        console.error('Error assigning job:', err);
       }
     }
   };

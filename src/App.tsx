@@ -1,6 +1,6 @@
 import { Routes, Route, useLocation } from 'react-router';
 import Navbar from './components/Nav';
-import { RealtimeProvider } from './context/RealtimeContext';
+import { AuthProvider } from './context/Auth';
 
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
@@ -21,7 +21,7 @@ function App() {
     location.pathname === '/login' || location.pathname === '/signup';
 
   return (
-    <RealtimeProvider>
+    <AuthProvider>
       <div className="min-h-screen flex flex-col w-full">
         <Navbar />
         <Toaster />
@@ -102,7 +102,7 @@ function App() {
           </Routes>
         </div>
       </div>
-    </RealtimeProvider>
+    </AuthProvider>
   );
 }
 

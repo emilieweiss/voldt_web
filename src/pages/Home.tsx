@@ -1,14 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { getApprovedJobs } from '../api/user_job';
-import { getUserProfiles } from '../api/user';
-import { useRealtime } from '../context/RealtimeContext';
+import { getUserProfiles, supabase } from '../api/user';
 import { TableData } from '../types/chart_data';
 import BarLoader from 'react-spinners/BarLoader';
 
 const Home = () => {
   const [tableData, setTableData] = useState<TableData[]>([]);
   const [loading, setLoading] = useState(true);
-  const { subscribeTo } = useRealtime();
 
   const loadData = useCallback(async () => {
     try {
@@ -45,10 +43,24 @@ const Home = () => {
   useEffect(() => {
     loadData();
 
-    const unsubscribe = subscribeTo(['user_jobs', 'profiles'], loadData);
+    const channel = supabase
+      .channel('home_user_overview')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'user_jobs' },
+        () => loadData(),
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'profiles' },
+        () => loadData(),
+      )
+      .subscribe();
 
-    return unsubscribe;
-  }, [loadData, subscribeTo]);
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [loadData]);
 
   return (
     <div className="">

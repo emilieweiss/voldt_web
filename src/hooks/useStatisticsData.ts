@@ -1,12 +1,11 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { getApprovedJobs } from '../api/user_job';
-import { getUserProfiles } from '../api/user';
+import { getUserProfiles, supabase } from '../api/user';
 import { getPunishments } from '../api/punishment';
 import { BarData, ChartUser, LineChartData } from '../types/chart_data';
 import { User } from '../types/user';
 import { UserJob } from '../types/user_job';
 import { Punishment } from '../types/punishment';
-import { useRealtime } from '../context/RealtimeContext';
 
 interface UseStatisticsDataReturn {
   lineChartData: LineChartData[];
@@ -25,7 +24,6 @@ export const useStatisticsData = (): UseStatisticsDataReturn => {
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { subscribeTo } = useRealtime();
 
   const loadData = useCallback(async () => {
     try {
@@ -50,14 +48,29 @@ export const useStatisticsData = (): UseStatisticsDataReturn => {
   useEffect(() => {
     loadData();
 
-    // Subscribe to relevant tables for statistics
-    const unsubscribe = subscribeTo(
-      ['user_jobs', 'profiles', 'punishment'],
-      loadData,
-    );
+    const channel = supabase
+      .channel('statistics_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'user_jobs' },
+        () => loadData(),
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'profiles' },
+        () => loadData(),
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'punishment' },
+        () => loadData(),
+      )
+      .subscribe();
 
-    return unsubscribe;
-  }, [loadData, subscribeTo]);
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [loadData]);
 
   const processedData = useMemo(() => {
     if (!rawData) {

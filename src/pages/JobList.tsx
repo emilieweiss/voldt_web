@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { deleteUserProfile, getUserProfiles } from '../api/user';
+import { deleteUserProfile, getUserProfiles, supabase } from '../api/user';
 import { getUserJobs } from '../api/user_job';
 import UserJobList from '../components/job-list-components/UserJobList';
 import { BarLoader } from 'react-spinners';
@@ -11,7 +11,6 @@ import Button from '../components/ui/Button';
 import DeleteUserModal from '../modals/DeleteUserModal';
 import Modal from '../modals/Modal';
 import { toast } from 'sonner';
-import { useRealtime } from '../context/RealtimeContext';
 
 type SortBy = 'name-asc' | 'name-desc' | 'money-asc' | 'money-desc';
 
@@ -23,7 +22,6 @@ const JobList = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [sortBy, setSortBy] = useState<SortBy>('name-asc');
   const { id } = useParams<{ id: string }>();
-  const { subscribeTo } = useRealtime();
 
   const initialLoad = useCallback(async () => {
     setLoading(true);
@@ -65,10 +63,50 @@ const JobList = () => {
   useEffect(() => {
     initialLoad();
 
-    const unsubscribe = subscribeTo(['user_jobs', 'profiles'], updateData);
+    const channel = supabase
+      .channel('job_list_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'user_jobs' },
+        () => updateData(),
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'profiles' },
+        () => updateData(),
+      )
+      .subscribe();
 
-    return unsubscribe;
-  }, [initialLoad, updateData, subscribeTo]);
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [initialLoad, updateData]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        updateData();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [updateData]);
+
+  useEffect(() => {
+    const handleFocus = () => {
+      updateData();
+    };
+
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [updateData]);
 
   const handleEdit = (userId: string) => {
     navigate(`/edit-job/${userId}`);

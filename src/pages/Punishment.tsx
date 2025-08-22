@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { getUserProfiles } from '../api/user';
+import { getUserProfiles, supabase } from '../api/user';
 import { getPunishments } from '../api/punishment';
 import { User } from '../types/user';
 import type { Punishment } from '../types/punishment';
@@ -8,7 +8,6 @@ import { toast } from 'sonner';
 import PunishmentHistory from '../components/punishment-components/PunishmentHistory';
 import CurrentBalances from '../components/punishment-components/CurrentBalances';
 import GivePunishment from '../components/punishment-components/GivePunishment';
-import { useRealtime } from '../context/RealtimeContext';
 
 const Punishment = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -17,7 +16,6 @@ const Punishment = () => {
   >([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
-  const { subscribeTo } = useRealtime();
 
   const initialLoad = useCallback(async () => {
     setLoading(true);
@@ -59,10 +57,32 @@ const Punishment = () => {
   useEffect(() => {
     initialLoad();
 
-    const unsubscribe = subscribeTo(['punishment', 'profiles'], updateData);
+    const channel = supabase
+      .channel('punishment_page_realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'punishment',
+        },
+        () => updateData(),
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profiles',
+        },
+        () => updateData(),
+      )
+      .subscribe();
 
-    return unsubscribe;
-  }, [initialLoad, updateData, subscribeTo]);
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [initialLoad, updateData]);
 
   return (
     <div className="">
