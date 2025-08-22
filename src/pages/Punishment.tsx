@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { getUserProfiles, supabase } from '../api/user';
+import { getUserProfiles } from '../api/user';
 import { getPunishments } from '../api/punishment';
 import { User } from '../types/user';
 import type { Punishment } from '../types/punishment';
