@@ -10,12 +10,15 @@ export async function assignJobToUser(userJob: Omit<UserJob, 'id'>) {
   if (error) throw error;
   return data;
 }
-// Get all jobs assigned to a user
+
+// Get jobs assigned to a user, but not solved or approved
 export async function getUserJobs(userId: string) {
   const { data, error } = await supabase
     .from('user_jobs')
     .select('*')
-    .eq('user_id', userId);
+    .eq('user_id', userId)
+    .eq('solved', false)
+    .eq('approved', false);
   if (error) throw error;
   return data as UserJob[];
 }
