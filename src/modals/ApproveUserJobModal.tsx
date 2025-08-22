@@ -59,14 +59,17 @@ export default function ApproveUserJobModal({
               <img
                 src={imageSolvedUrl}
                 alt="Løsning"
-                className={`rounded-lg max-h-64 object-contain mx-auto ${imageLoading ? 'hidden' : 'block'
-                  }`}
+                className={`rounded-lg max-w-[55vw] object-contain mx-auto ${
+                  imageLoading ? 'hidden' : 'block'
+                }`}
                 onLoad={handleImageLoad}
                 onError={handleImageError}
               />
             </>
           ) : (
-            <p className="text-red-500 text-center">Fejl i hentning af billede</p>
+            <p className="text-red-500 text-center">
+              Fejl i hentning af billede
+            </p>
           )}
         </div>
 
