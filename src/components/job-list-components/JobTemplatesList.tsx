@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import { getJobs, updateJob } from '../../api/job';
 import { Job } from '../../types/job';
-import { SendHorizonal } from 'lucide-react';
 import EditUserJobModal from '../../modals/EditUserJobModal';
 import Searchbar from '../ui/Searchbar';
 import Select from '../ui/Select';
 import { toast } from 'sonner';
 import Button from '../ui/Button';
-import { Clock, DollarSign } from 'lucide-react';
+import { Plus, Clock, DollarSign } from 'lucide-react';
 
 type SortBy = 'title-asc' | 'title-desc' | 'money-asc' | 'money-desc';
 
@@ -122,7 +121,7 @@ export default function JobTemplatesList({
                   setModalOpen(true);
                 }}
               >
-                <SendHorizonal size={20} />
+                <Plus size={20} />
               </Button>
             </li>
           ))}
