@@ -76,10 +76,13 @@ export async function getApprovedJobs() {
 }
 
 export async function approveJob(userJobId: string, amount: number) {
-  // 1. Approve the job and get the updated row
+  // 1. Approve the job and update the money amount
   const { data: userJob, error: jobError } = await supabase
     .from('user_jobs')
-    .update({ approved: true })
+    .update({
+      approved: true,
+      money: amount, // Update the job's money field to the reduced amount
+    })
     .eq('id', userJobId)
     .select()
     .single();
