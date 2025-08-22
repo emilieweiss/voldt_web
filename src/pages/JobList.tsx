@@ -8,8 +8,6 @@ import { User } from '../types/user';
 import { UserJob } from '../types/user_job';
 import Select from '../components/ui/Select';
 import Button from '../components/ui/Button';
-import { Pencil } from 'lucide-react';
-import Searchbar from '../components/ui/Searchbar';
 import DeleteUserModal from '../modals/DeleteUserModal';
 import Modal from '../modals/Modal';
 import { toast } from 'sonner';
@@ -22,7 +20,6 @@ const JobList = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState<SortBy>('name-asc');
   const { id } = useParams<{ id: string }>();
 
@@ -125,14 +122,11 @@ const JobList = () => {
     <div className="">
       <h1 className="mb-4">Jobliste</h1>
       <div className="flex items-center gap-x-4 mb-4">
-        <Searchbar
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full md:w-1/3"
-        />
-
         <div className="flex items-center gap-4 ml-auto">
-          <label htmlFor="sortby" className="text-sm font-semibold sm:whitespace-nowrap">
+          <label
+            htmlFor="sortby"
+            className="text-sm font-semibold sm:whitespace-nowrap"
+          >
             Sortér efter:
           </label>
           <Select
@@ -146,10 +140,10 @@ const JobList = () => {
           />
           <Button
             onClick={() => setIsOpen(true)}
-            className="w-10 h-10 lg:w-14 lg:h-14 rounded-xl flex items-center justify-center p-0 flex-shrink-0"
-            aria-label="Opret ny opgave"
+            className="w-20 h-10 lg:w-20 lg:h-14 rounded-xl flex items-center justify-center p-0 flex-shrink-0"
+            aria-label="Slet bruger"
           >
-            <Pencil size={30} />
+            Slet bruger
           </Button>
         </div>
       </div>
