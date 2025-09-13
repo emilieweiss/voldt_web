@@ -111,16 +111,22 @@ const Home = () => {
                 </tr>
               </thead>
               <tbody>
-                {tableData.map((user, index) => {
-                  const totalUsers = tableData.length;
-                  const bottomThirdStart = Math.ceil((totalUsers * 2) / 3);
-                  const isFirstPlace = index === 0;
-                  const isBottomThird = index >= bottomThirdStart;
+                {tableData.map((user) => {
+                  // Check if all users have the same balance
+                  const allSameBalance = tableData.every(u => u.currentBalance === tableData[0].currentBalance);
+
+                  // Find highest and lowest balances
+                  const highestBalance = tableData[0].currentBalance; // Already sorted desc
+                  const lowestBalance = tableData[tableData.length - 1].currentBalance;
+
+                  // Determine if user has highest or lowest balance (considering ties)
+                  const hasHighestBalance = user.currentBalance === highestBalance && !allSameBalance;
+                  const hasLowestBalance = user.currentBalance === lowestBalance && !allSameBalance && highestBalance !== lowestBalance;
 
                   let rowClass = 'border-t';
-                  if (isFirstPlace) {
+                  if (hasHighestBalance) {
                     rowClass += ' bg-green-300 border-b';
-                  } else if (isBottomThird) {
+                  } else if (hasLowestBalance) {
                     rowClass += ' bg-red-300';
                   }
 
