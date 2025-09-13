@@ -96,7 +96,14 @@ export const useStatisticsData = (): UseStatisticsDataReturn => {
 
     // Get all unique event times and sort them
     const deliveryTimes = jobs
-      .map((job) => job.approved_time ? job.approved_time.slice(0, 5) : job.delivery?.slice(0, 5))
+      .map((job) => {
+        if (job.approved_time) {
+          // Convert timestampz to HH:mm format
+          const date = new Date(job.approved_time);
+          return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        }
+        return job.delivery?.slice(0, 5);
+      })
       .filter(Boolean) as string[];
 
     const punishmentTimes = punishments
@@ -140,7 +147,15 @@ export const useStatisticsData = (): UseStatisticsDataReturn => {
 
     // Populate jobs by time
     jobs.forEach((job) => {
-      const timeKey = job.approved_time ? job.approved_time.slice(0, 5) : job.delivery?.slice(0, 5);
+      let timeKey: string | undefined;
+      if (job.approved_time) {
+        // Convert timestampz to HH:mm format
+        const date = new Date(job.approved_time);
+        timeKey = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+      } else {
+        timeKey = job.delivery?.slice(0, 5);
+      }
+
       if (timeKey && jobsByTime.has(timeKey)) {
         jobsByTime.get(timeKey)!.push(job);
       }
