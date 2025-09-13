@@ -124,7 +124,11 @@ const ApproveJob = () => {
                 await approveJob(selectedJob.id, amount);
 
                 toast.success(
-                  `Job godkendt med rating: "${rating}". Udbetaling: ${amount} kr. (Original: ${selectedJob.money} kr.)`,
+                  <>
+                    <div>Job godkendt med rating: "{rating}"</div>
+                    <div>Udbetaling: {amount.toLocaleString('da-DK')} kr.</div>
+                    <div>Original: {selectedJob.money.toLocaleString('da-DK')} kr.</div>
+                  </>
                 );
               } catch (error) {
                 toast.error('Fejl ved godkendelse af job');

@@ -25,7 +25,7 @@ const CurrentBalances = ({ users }: CurrentBalancesProps) => {
               <span
                 className={`font-semibold ${(user.money || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}
               >
-                {user.money || 0} kr.
+                {user.money.toLocaleString('da-DK')} kr.
               </span>
             </div>
           ))}

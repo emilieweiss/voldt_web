@@ -134,7 +134,7 @@ const Home = () => {
                     <tr key={user.name} className={rowClass}>
                       <td className="py-2 px-4">{user.name}</td>
                       <td className="py-2 px-4">{user.jobs}</td>
-                      <td className="py-2 px-4">{user.currentBalance}</td>
+                      <td className="py-2 px-4">{user.currentBalance.toLocaleString('da-DK')}</td>
                     </tr>
                   );
                 })}
@@ -147,9 +147,10 @@ const Home = () => {
             <table className="w-full border rounded-lg text-lg">
               <thead>
                 <tr className="bg-gray-300">
-                  <th className="py-2 px-4 text-left">Type</th>
-                  <th className="py-2 px-4 text-left">Beskrivelse</th>
-                  <th className="py-2 px-4 text-left">Tidspunkt</th>
+                  <th className="py-2 px-4 text-left w-[15%]">Tidspunkt</th>
+                  <th className="py-2 px-4 text-left w-[15%]">Type</th>
+                  <th className="py-2 px-4 text-left w-[30%]">Beskrivelse</th>
+                  <th className="py-2 px-4 text-left w-[15%]">Løn</th>
                 </tr>
               </thead>
               <tbody>
@@ -158,15 +159,7 @@ const Home = () => {
                     key={index}
                     className={`border-t ${index % 2 === 1 ? 'bg-gray-200' : ''}`}
                   >
-                    <td className="py-2 px-4">
-                      <span className={event.type === 'Job' ? 'text-green-600 font-bold' : 'text-red-600 font-bold'}>
-                        {event.type}
-                      </span>
-                    </td>
-                    <td className="py-2 px-4">
-                      {event.type === 'Job' ? `${event.title}` : event.reason || 'Ingen beskrivelse'}
-                    </td>
-                    <td className="py-2 px-4">
+                    <td className="px-4">
                       {new Date(event.type === 'Job' ? event.approved_time : event.created_at)
                         .toLocaleTimeString('da-DK', {
                           hour: '2-digit',
@@ -174,6 +167,19 @@ const Home = () => {
                           hour12: false,
                         })
                         .replace('.', ':')}
+                    </td>
+                    <td className="px-4">
+                      {event.type}
+                    </td>
+                    <td className="px-4">
+                      {event.type === 'Job' ? `${event.title}` : event.reason || 'Ingen beskrivelse'}
+                    </td>
+                    <td className="px-4">
+                      <span className={event.type === 'Job' ? 'text-green-600 font-bold' : 'text-red-600 font-bold'}>
+                        {event.type === 'Job'
+                          ? event.money.toLocaleString('da-DK') + ' kr.'
+                          : event.amount ? '-' + event.amount.toLocaleString('da-DK') + ' kr.' : '-'}
+                      </span>
                     </td>
                   </tr>
                 ))}
