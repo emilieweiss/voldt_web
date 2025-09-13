@@ -49,6 +49,9 @@ const BarChart = ({
               position: 'insideBottom',
               offset: -10,
             }}
+            tickFormatter={(value: number) =>
+              typeof value === 'number' ? value.toLocaleString('da-DK') : value
+            }
           />
           <YAxis
             dataKey="name"
@@ -57,15 +60,19 @@ const BarChart = ({
             tick={{ fontSize: 16, width: 80 }}
             interval={0}
           />
-          <Tooltip />
+          <Tooltip
+            formatter={(value: number) =>
+              typeof value === 'number' ? value.toLocaleString('da-DK') : value
+            }
+          />
           <Bar dataKey={dataKey} name={barName}>
             {data.map((entry, index) => (
               <Cell
                 key={`cell-${dataKey}-${index}`}
                 fill={
                   useNegativeColors &&
-                  dataKey === 'netEarnings' &&
-                  entry.netEarnings < 0
+                    dataKey === 'netEarnings' &&
+                    entry.netEarnings < 0
                     ? '#EF4444'
                     : colors[index % colors.length]
                 }

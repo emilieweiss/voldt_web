@@ -28,7 +28,10 @@ const CustomTooltip = ({ active, payload, label }: any) => {
         )}
         {payload.map((entry: any, index: number) => (
           <p key={index} style={{ color: entry.color }}>
-            {`${entry.dataKey}: ${entry.value} kr.`}
+            {`${entry.dataKey}: ${typeof entry.value === 'number'
+              ? entry.value.toLocaleString('da-DK')
+              : entry.value
+              } kr.`}
           </p>
         ))}
       </div>
@@ -89,7 +92,7 @@ const LineChart = ({
               type="monotone"
               dataKey={user.name}
               stroke={colors[index % colors.length]}
-              strokeWidth={2}
+              strokeWidth={4}
               dot={<CustomDot stroke={colors[index % colors.length]} />}
               connectNulls={false}
               activeDot={{

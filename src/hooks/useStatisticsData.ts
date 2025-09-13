@@ -96,7 +96,7 @@ export const useStatisticsData = (): UseStatisticsDataReturn => {
 
     // Get all unique event times and sort them
     const deliveryTimes = jobs
-      .map((job) => job.delivery?.slice(0, 5))
+      .map((job) => job.approved_time ? job.approved_time.slice(0, 5) : job.delivery?.slice(0, 5))
       .filter(Boolean) as string[];
 
     const punishmentTimes = punishments
@@ -140,9 +140,9 @@ export const useStatisticsData = (): UseStatisticsDataReturn => {
 
     // Populate jobs by time
     jobs.forEach((job) => {
-      const deliveryKey = job.delivery?.slice(0, 5);
-      if (deliveryKey && jobsByTime.has(deliveryKey)) {
-        jobsByTime.get(deliveryKey)!.push(job);
+      const timeKey = job.approved_time ? job.approved_time.slice(0, 5) : job.delivery?.slice(0, 5);
+      if (timeKey && jobsByTime.has(timeKey)) {
+        jobsByTime.get(timeKey)!.push(job);
       }
     });
 
@@ -261,8 +261,7 @@ export const useStatisticsData = (): UseStatisticsDataReturn => {
         jobs: jobCounts[user.id] || 0,
         money: moneyEarned[user.id] || 0,
         punishments: punishmentAmounts[user.id] || 0,
-        netEarnings:
-          (moneyEarned[user.id] || 0) - (punishmentAmounts[user.id] || 0),
+        netEarnings: (moneyEarned[user.id] || 0) - (punishmentAmounts[user.id] || 0),
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
 
