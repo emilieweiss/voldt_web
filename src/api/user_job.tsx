@@ -37,7 +37,7 @@ export async function markJobAsSolved(userJobId: string) {
 export async function markJobAsUnsolved(userJobId: string) {
   const { data, error } = await supabase
     .from('user_jobs')
-    .update({ solved: false })
+    .update({ solved: false, approved: false, image_solved_url: null, approved_time: null })
     .eq('id', userJobId)
     .single();
   if (error) throw error;
@@ -70,18 +70,23 @@ export async function getApprovedJobs() {
     .from('user_jobs')
     .select('*')
     .eq('solved', true)
-    .eq('approved', true);
+    .eq('approved', true)
+    .order('approved_time', { ascending: false });
   if (error) throw error;
   return data as UserJob[];
 }
 
 export async function approveJob(userJobId: string, amount: number) {
-  // 1. Approve the job and update the money amount
+  // 1. Make a const for the time being approved
+  const approvedAt = new Date().toISOString();
+
+  // 2. Approve the job and update the money amount
   const { data: userJob, error: jobError } = await supabase
     .from('user_jobs')
     .update({
       approved: true,
       money: amount, // Update the job's money field to the reduced amount
+      approved_time: approvedAt
     })
     .eq('id', userJobId)
     .select()
@@ -89,10 +94,10 @@ export async function approveJob(userJobId: string, amount: number) {
   if (jobError) throw jobError;
   if (!userJob) throw new Error('Job not found or could not be approved');
 
-  // 2. Find the user_id from the approved job
+  // 3. Find the user_id from the approved job
   const userId = (userJob as UserJob).user_id;
 
-  // 3. Fetch the user's current profile
+  // 4. Fetch the user's current profile
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('money')
@@ -101,7 +106,7 @@ export async function approveJob(userJobId: string, amount: number) {
   if (profileError) throw profileError;
   if (!profile) throw new Error('Profile not found for user: ' + userId);
 
-  // 4. Update the user's money
+  // 5. Update the user's money
   const newMoney = (profile.money ?? 0) + amount;
   const { data: updatedProfile, error: updateError } = await supabase
     .from('profiles')
@@ -115,4 +120,20 @@ export async function approveJob(userJobId: string, amount: number) {
   }
 
   return { userJob, updatedProfile };
+}
+
+
+export async function getLatest15UserJobs() {
+  const { data, error } = await supabase
+    .from('user_jobs')
+    .select(`
+      *,
+      profiles(name)
+    `)
+    .not('approved_time', 'is', null)
+    .order('approved_time', { ascending: false })
+    .limit(15);
+
+  if (error) throw error;
+  return data as (UserJob & { profiles: { name: string } })[];
 }

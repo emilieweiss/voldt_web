@@ -78,3 +78,17 @@ export async function deletePunishment(punishmentId: number) {
     if (error) throw error;
     return data;
 }
+
+export async function getLatest15Punishments() {
+    const { data, error } = await supabase
+        .from('punishment')
+        .select(`
+      *,
+      profiles(name)
+    `)
+        .order('created_at', { ascending: false })
+        .limit(15);
+
+    if (error) throw error;
+    return data as (Punishment & { profiles: { name: string } })[];
+}
