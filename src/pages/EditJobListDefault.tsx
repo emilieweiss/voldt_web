@@ -10,10 +10,12 @@ const EditJobListDefault = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const userOptions = users.map((u) => ({
-    label: u.name,
-    value: u.id,
-  }));
+  const userOptions = users
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map((u) => ({
+      label: u.name,
+      value: u.id,
+    }));
 
   useEffect(() => {
     async function fetchUsers() {
