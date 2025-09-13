@@ -1,18 +1,22 @@
 import { useCallback, useEffect, useState } from 'react';
-import { getApprovedJobs } from '../api/user_job';
+import { getApprovedJobs, getLatest15UserJobs } from '../api/user_job';
+import { getLatest15Punishments } from '../api/punishment';
 import { getUserProfiles, supabase } from '../api/user';
 import { TableData } from '../types/chart_data';
 import BarLoader from 'react-spinners/BarLoader';
 
 const Home = () => {
   const [tableData, setTableData] = useState<TableData[]>([]);
+  const [latestEvents, setLatestEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadData = useCallback(async () => {
     try {
-      const [jobs, profiles] = await Promise.all([
+      const [jobs, profiles, latestUserJobs, latestPunishments] = await Promise.all([
         getApprovedJobs(),
         getUserProfiles(),
+        getLatest15UserJobs(),
+        getLatest15Punishments(),
       ]);
 
       const jobCounts: Record<string, number> = {};
@@ -34,7 +38,25 @@ const Home = () => {
         }))
         .sort((a, b) => b.currentBalance - a.currentBalance);
 
+      const combinedEvents = [
+        ...latestUserJobs.map((job) => ({
+          ...job,
+          timestamp: job.approved_time ? new Date(job.approved_time).getTime() : 0,
+          type: 'Job',
+        })),
+        ...latestPunishments.map((punishment) => ({
+          ...punishment,
+          timestamp: punishment.created_at ? new Date(punishment.created_at).getTime() : 0,
+          type: 'Straf',
+        })),
+      ]
+        .sort((a, b) => b.timestamp - a.timestamp)
+        .slice(0, 15);
+
       setTableData(tableData);
+      setLatestEvents(combinedEvents);
+    } catch (error) {
+      console.error('Error loading data:', error);
     } finally {
       setLoading(false);
     }
@@ -53,6 +75,11 @@ const Home = () => {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'profiles' },
+        () => loadData(),
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'punishment' },
         () => loadData(),
       )
       .subscribe();
@@ -77,7 +104,7 @@ const Home = () => {
           <div className="overflow-x-auto">
             <table className="w-full border rounded-lg text-lg">
               <thead>
-                <tr className="bg-gray-100">
+                <tr className="bg-gray-300">
                   <th className="py-2 px-4 text-left">Navn</th>
                   <th className="py-2 px-4 text-left">Færdige jobs</th>
                   <th className="py-2 px-4 text-left">Nuværende saldo (kr.)</th>
@@ -92,9 +119,9 @@ const Home = () => {
 
                   let rowClass = 'border-t';
                   if (isFirstPlace) {
-                    rowClass += ' bg-green-100 border-b';
+                    rowClass += ' bg-green-300 border-b';
                   } else if (isBottomThird) {
-                    rowClass += ' bg-red-100';
+                    rowClass += ' bg-red-300';
                   }
 
                   return (
@@ -105,6 +132,45 @@ const Home = () => {
                     </tr>
                   );
                 })}
+              </tbody>
+            </table>
+          </div>
+
+          <h2 className="mt-8 mb-4">Seneste begivenheder</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full border rounded-lg text-lg">
+              <thead>
+                <tr className="bg-gray-300">
+                  <th className="py-2 px-4 text-left">Type</th>
+                  <th className="py-2 px-4 text-left">Beskrivelse</th>
+                  <th className="py-2 px-4 text-left">Tidspunkt</th>
+                </tr>
+              </thead>
+              <tbody>
+                {latestEvents.map((event, index) => (
+                  <tr
+                    key={index}
+                    className={`border-t ${index % 2 === 1 ? 'bg-gray-200' : ''}`}
+                  >
+                    <td className="py-2 px-4">
+                      <span className={event.type === 'Job' ? 'text-green-600 font-bold' : 'text-red-600 font-bold'}>
+                        {event.type}
+                      </span>
+                    </td>
+                    <td className="py-2 px-4">
+                      {event.type === 'Job' ? `${event.title}` : event.reason || 'Ingen beskrivelse'}
+                    </td>
+                    <td className="py-2 px-4">
+                      {new Date(event.type === 'Job' ? event.approved_time : event.created_at)
+                        .toLocaleTimeString('da-DK', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: false,
+                        })
+                        .replace('.', ':')}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
