@@ -11,4 +11,5 @@ export interface UserJob {
   money: number; //how much money the job pays
   solved: boolean;
   approved: boolean;
+  approved_time?: string // timestampz
 }
