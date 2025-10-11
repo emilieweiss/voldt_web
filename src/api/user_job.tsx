@@ -35,9 +35,15 @@ export async function markJobAsSolved(userJobId: string) {
 }
 
 export async function markJobAsUnsolved(userJobId: string) {
+  const deniedAt = new Date().toISOString();
   const { data, error } = await supabase
     .from('user_jobs')
-    .update({ solved: false, approved: false, image_solved_url: null, approved_time: null })
+    .update({
+      solved: false,
+      approved: false,
+      image_solved_url: null,
+      approved_time: deniedAt,
+    })
     .eq('id', userJobId)
     .single();
   if (error) throw error;
@@ -86,7 +92,7 @@ export async function approveJob(userJobId: string, amount: number) {
     .update({
       approved: true,
       money: amount, // Update the job's money field to the reduced amount
-      approved_time: approvedAt
+      approved_time: approvedAt,
     })
     .eq('id', userJobId)
     .select()
@@ -122,14 +128,15 @@ export async function approveJob(userJobId: string, amount: number) {
   return { userJob, updatedProfile };
 }
 
-
 export async function getLatest15UserJobs() {
   const { data, error } = await supabase
     .from('user_jobs')
-    .select(`
+    .select(
+      `
       *,
       profiles(name)
-    `)
+    `,
+    )
     .not('approved_time', 'is', null)
     .order('approved_time', { ascending: false })
     .limit(15);

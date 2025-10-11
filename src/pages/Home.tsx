@@ -5,19 +5,36 @@ import { getUserProfiles, supabase } from '../api/user';
 import { TableData } from '../types/chart_data';
 import BarLoader from 'react-spinners/BarLoader';
 
+interface EventItem {
+  timestamp: number;
+  user: string;
+  type: 'Job godkendt' | 'Job afvist' | 'Straf';
+  // job props
+  title?: string;
+  money?: number;
+  approved_time?: string;
+  solved?: boolean;
+  // punishment props
+  reason?: string;
+  amount?: number;
+  created_at?: string;
+}
+
 const Home = () => {
   const [tableData, setTableData] = useState<TableData[]>([]);
-  const [latestEvents, setLatestEvents] = useState<any[]>([]);
+  const [latestEvents, setLatestEvents] = useState<EventItem[]>([]);
+
   const [loading, setLoading] = useState(true);
 
   const loadData = useCallback(async () => {
     try {
-      const [jobs, profiles, latestUserJobs, latestPunishments] = await Promise.all([
-        getApprovedJobs(),
-        getUserProfiles(),
-        getLatest15UserJobs(),
-        getLatest15Punishments(),
-      ]);
+      const [jobs, profiles, latestUserJobs, latestPunishments] =
+        await Promise.all([
+          getApprovedJobs(),
+          getUserProfiles(),
+          getLatest15UserJobs(),
+          getLatest15Punishments(),
+        ]);
 
       const jobCounts: Record<string, number> = {};
       const moneyEarned: Record<string, number> = {};
@@ -38,16 +55,25 @@ const Home = () => {
         }))
         .sort((a, b) => b.currentBalance - a.currentBalance);
 
-      const combinedEvents = [
+      const combinedEvents: EventItem[] = [
         ...latestUserJobs.map((job) => ({
           ...job,
-          timestamp: job.approved_time ? new Date(job.approved_time).getTime() : 0,
-          type: 'Job',
+          timestamp: job.approved_time
+            ? new Date(job.approved_time).getTime()
+            : 0,
+          user: job.profiles.name,
+          type:
+            job.approved_time && job.solved === false
+              ? ('Job afvist' as const)
+              : ('Job godkendt' as const),
         })),
         ...latestPunishments.map((punishment) => ({
           ...punishment,
-          timestamp: punishment.created_at ? new Date(punishment.created_at).getTime() : 0,
-          type: 'Straf',
+          timestamp: punishment.created_at
+            ? new Date(punishment.created_at).getTime()
+            : 0,
+          user: punishment.profiles.name,
+          type: 'Straf' as const,
         })),
       ]
         .sort((a, b) => b.timestamp - a.timestamp)
@@ -113,15 +139,22 @@ const Home = () => {
               <tbody>
                 {tableData.map((user) => {
                   // Check if all users have the same balance
-                  const allSameBalance = tableData.every(u => u.currentBalance === tableData[0].currentBalance);
+                  const allSameBalance = tableData.every(
+                    (u) => u.currentBalance === tableData[0].currentBalance,
+                  );
 
                   // Find highest and lowest balances
                   const highestBalance = tableData[0].currentBalance; // Already sorted desc
-                  const lowestBalance = tableData[tableData.length - 1].currentBalance;
+                  const lowestBalance =
+                    tableData[tableData.length - 1].currentBalance;
 
                   // Determine if user has highest or lowest balance (considering ties)
-                  const hasHighestBalance = user.currentBalance === highestBalance && !allSameBalance;
-                  const hasLowestBalance = user.currentBalance === lowestBalance && !allSameBalance && highestBalance !== lowestBalance;
+                  const hasHighestBalance =
+                    user.currentBalance === highestBalance && !allSameBalance;
+                  const hasLowestBalance =
+                    user.currentBalance === lowestBalance &&
+                    !allSameBalance &&
+                    highestBalance !== lowestBalance;
 
                   let rowClass = 'border-t';
                   if (hasHighestBalance) {
@@ -134,7 +167,9 @@ const Home = () => {
                     <tr key={user.name} className={rowClass}>
                       <td className="py-2 px-4">{user.name}</td>
                       <td className="py-2 px-4">{user.jobs}</td>
-                      <td className="py-2 px-4">{user.currentBalance.toLocaleString('da-DK')}</td>
+                      <td className="py-2 px-4">
+                        {user.currentBalance.toLocaleString('da-DK')}
+                      </td>
                     </tr>
                   );
                 })}
@@ -147,9 +182,10 @@ const Home = () => {
             <table className="w-full border rounded-lg text-lg">
               <thead>
                 <tr className="bg-gray-300">
-                  <th className="py-2 px-4 text-left w-[15%]">Tidspunkt</th>
-                  <th className="py-2 px-4 text-left w-[15%]">Type</th>
-                  <th className="py-2 px-4 text-left w-[30%]">Beskrivelse</th>
+                  <th className="py-2 px-4 text-left w-[10%]">Tidspunkt</th>
+                  <th className="py-2 px-4 text-left w-[15%]">Bruger</th>
+                  <th className="py-2 px-4 text-left w-[20%]">Type</th>
+                  <th className="py-2 px-4 text-left w-[40%]">Beskrivelse</th>
                   <th className="py-2 px-4 text-left w-[15%]">Løn</th>
                 </tr>
               </thead>
@@ -160,7 +196,12 @@ const Home = () => {
                     className={`border-t ${index % 2 === 1 ? 'bg-gray-200' : ''}`}
                   >
                     <td className="px-4">
-                      {new Date(event.type === 'Job' ? event.approved_time : event.created_at)
+                      {new Date(
+                        event.type === 'Job godkendt' ||
+                        event.type === 'Job afvist'
+                          ? event.approved_time || ''
+                          : event.created_at || '',
+                      )
                         .toLocaleTimeString('da-DK', {
                           hour: '2-digit',
                           minute: '2-digit',
@@ -168,17 +209,33 @@ const Home = () => {
                         })
                         .replace('.', ':')}
                     </td>
+                    <td className="px-4">{event.user}</td>
+                    <td className="px-4">{event.type}</td>
                     <td className="px-4">
-                      {event.type}
+                      {event.type === 'Job godkendt' ||
+                      event.type === 'Job afvist'
+                        ? `${event.title}`
+                        : event.reason || 'Ingen beskrivelse'}
                     </td>
                     <td className="px-4">
-                      {event.type === 'Job' ? `${event.title}` : event.reason || 'Ingen beskrivelse'}
-                    </td>
-                    <td className="px-4">
-                      <span className={event.type === 'Job' ? 'text-green-600 font-bold' : 'text-red-600 font-bold'}>
-                        {event.type === 'Job'
-                          ? event.money.toLocaleString('da-DK') + ' kr.'
-                          : event.amount ? '-' + event.amount.toLocaleString('da-DK') + ' kr.' : '-'}
+                      <span
+                        className={
+                          event.type === 'Job godkendt'
+                            ? 'text-green-600 font-bold'
+                            : event.type === 'Job afvist'
+                              ? 'text-pink-300 font-bold'
+                              : 'text-red-600 font-bold'
+                        }
+                      >
+                        {event.type === 'Job godkendt'
+                          ? (event.money || 0).toLocaleString('da-DK') + ' kr.'
+                          : event.type === 'Job afvist'
+                            ? '0 kr.'
+                            : event.amount
+                              ? '-' +
+                                event.amount.toLocaleString('da-DK') +
+                                ' kr.'
+                              : '-'}
                       </span>
                     </td>
                   </tr>
