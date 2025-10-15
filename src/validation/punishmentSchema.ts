@@ -5,7 +5,6 @@ export const punishmentSchema = z.object({
     penaltyAmount: z
         .number({ invalid_type_error: 'Skal være et tal' })
         .min(1, 'Beløbet skal være mindst 1 kr.')
-        .max(10000, 'Beløbet kan ikke være over 10.000 kr.')
         .int('Skal være et helt tal'),
     penaltyReason: z
         .string()
